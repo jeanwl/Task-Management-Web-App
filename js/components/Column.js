@@ -1,0 +1,101 @@
+import { reactive, html } from '../lib/arrow.js'
+import { generateId } from '../helpers.js'
+import { Task } from './Task.js'
+
+export class Column {
+    tasks = {}
+
+    data = reactive({
+        name: '',
+        tasksIds: []
+    })
+    keysToSave = ['name', 'tasksIds']
+
+    constructor({ board, id, name, wasSaved }) {
+        this.board = board
+        this.id = id
+        this.storageKey = `column_${id}`
+
+        if (wasSaved) this.load()
+
+        const { data } = this
+
+        for (const key of this.keysToSave) {
+            data.$on(key, () => this.save())
+        }
+
+        if (wasSaved) return
+
+        data.name = name
+    }
+
+    getName() {
+        return this.data.name
+    }
+
+    setName(name) {
+        this.data.name = name
+    }
+
+    load() {
+        const savedData = localStorage.getItem(this.storageKey)
+        
+        const { name, tasksIds } = JSON.parse(savedData)
+        
+        for (const id of tasksIds) this.addTask({ id, wasSaved: true })
+        
+        if (name != null) this.data.name = name
+    }
+
+    save() {
+        const { data } = this
+        const entries = this.keysToSave.map(key => (
+            [key, data[key]]
+        ))
+        const save = Object.fromEntries(entries)
+
+        localStorage.setItem(this.storageKey, JSON.stringify(save))
+    }
+
+    addTask({ id, title, description, wasSaved }) {
+        this.tasks[id] = new Task({ column: this, id, title, description, wasSaved })
+        
+        this.data.tasksIds.push(id)
+    }
+
+    removeTask() {
+        
+    }
+
+    removeSave() {
+        for (const task of Object.values(this.tasks)) {
+            task.removeSave()
+        }
+
+        localStorage.removeItem(this.storageKey)
+    }
+
+    render() {
+        const { data } = this
+
+        return html`
+        
+        <h3>${data.name} (${() => data.tasksIds.length})</h3>
+
+        <ul>${() => this.renderTasks()}</ul>
+        
+        `
+    }
+
+    renderTasks() {
+        const { tasks } = this
+
+        return this.data.tasksIds.map(id => {
+            return html`
+            
+            ${() => tasks[id].render()}
+
+            `
+        })
+    }
+}

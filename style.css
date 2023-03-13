@@ -1,0 +1,35 @@
+body, h1, h2, h3, h4, p, ul, menu, li {
+    all: unset;
+}
+
+dialog {
+    padding: unset;
+}
+
+.app:not([data-is-dark]) {
+    color-scheme: light;
+}
+.app[data-is-dark] {
+    color-scheme: dark;
+}
+
+.board__content {
+    display: flex;
+    gap: 20px;
+}
+
+.board__toggleMenuBtn:not([aria-expanded]) + .board__menu {
+    display: none;
+}
+
+.column {
+    display: block;
+    width: 200px;
+}
+
+.task {
+    display: block;
+    margin-bottom: 10px;
+    border: 1px solid red;
+    cursor: pointer;
+}
