@@ -26,6 +26,10 @@ export class Subtask {
         data.isCompleted = isCompleted
     }
 
+    getTitle() {
+        return this.data.title
+    }
+
     getIsCompleted() {
         return this.data.isCompleted
     }
@@ -53,6 +57,12 @@ export class Subtask {
 
     removeSave() {
         localStorage.removeItem(this.storageKey)
+    }
+
+    toggle() {
+        const { data } = this
+
+        data.isCompleted = !data.isCompleted
     }
 
     render() {

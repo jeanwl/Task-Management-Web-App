@@ -1,5 +1,5 @@
 import { Board } from './Board.js'
-import { BoardDialog } from './BoardDialog.js'
+import { BoardFormDialog } from './BoardFormDialog.js'
 import { TaskDialog } from './TaskDialog.js'
 import { ConfirmDialog } from './ConfirmDialog.js'
 import { loadDataSample } from '../loadDataSample.js'
@@ -9,8 +9,8 @@ export class App {
     boards = {}
     maxBoard = 10
     storageKey = 'app'
-    boardDialog = new BoardDialog(this)
-    taskDialog = new TaskDialog(this)
+    boardFormDialog = new BoardFormDialog()
+    taskDialog = new TaskDialog()
     confirmDialog = new ConfirmDialog()
 
     data = reactive({
@@ -113,7 +113,7 @@ export class App {
 
             ${showSidebarBtn}
 
-            ${() => this.boardDialog.render()}
+            ${() => this.boardFormDialog.render()}
             ${() => this.taskDialog.render()}
             ${() => this.confirmDialog.render()}
         </div>
@@ -177,7 +177,7 @@ export class App {
             
         return html`
         
-        <button @click="${() => this.boardDialog.show()}">
+        <button @click="${() => this.boardFormDialog.showNew(this)}">
             Create New Board
         </button>
         

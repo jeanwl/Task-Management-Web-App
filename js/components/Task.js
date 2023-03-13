@@ -36,6 +36,22 @@ export class Task {
         return this.data.title
     }
 
+    getDescription() {
+        return this.data.description
+    }
+
+    getSubtasks() {
+        return Object.values(this.subtasks)
+    }
+
+    getNCompleted() {
+        const { subtasks } = this
+
+        return this.data.subtasksIds.filter((id) => (
+            subtasks[id].getIsCompleted()
+        )).length
+    }
+
     load() {
         const savedData = localStorage.getItem(this.storageKey)
         
@@ -76,18 +92,14 @@ export class Task {
     }
 
     render() {
-        const { data, subtasks } = this
+        const { data } = this
         const { subtasksIds } = data
-
-        const nCompleted = () => subtasksIds.filter((id) => (
-            subtasks[id].getIsCompleted()
-        )).length
 
         return html`
         
         <li class="task" @click="${() => this.taskDialog.showInfo(this)}">
             <h4>${() => data.title}</h4>
-            <p>${nCompleted} of ${() => subtasksIds.length} subtasks</p>
+            <p>${() => this.getNCompleted()} of ${() => subtasksIds.length} subtasks</p>
         </li>
 
         `

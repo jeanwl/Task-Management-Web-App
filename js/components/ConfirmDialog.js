@@ -1,79 +1,59 @@
-import { reactive, html } from '../lib/arrow.js'
+import { Dialog } from './Dialog.js'
+import { html } from '../lib/arrow.js'
 
-export class ConfirmDialog {
+export class ConfirmDialog extends Dialog {
     id = 'confirmDialog'
-    
-    data = reactive({})
-
-    get el() {
-        return this._el ?? (this._el = window[this.id])
-    }
 
     showBoard(board) {
         this.board = board
-        this.data.isTask = false
-        
-        setTimeout(() => this.el.showModal())
+        this.isTask = false
+
+        this.show()
     }
 
     showTask(task) {
         this.task = task
-        this.data.isTask = true
-        
-        setTimeout(() => this.el.showModal())
+        this.isTask = true
+
+        this.show()
+    }
+
+    getText() {
+        return `Are you sure you want to delete the ${this.isTask
+            ? `‘${this.task.getTitle()}’ task and its subtasks? This action`
+            : `‘${this.board.getName()}’ board? This action will remove all columns and tasks and`
+        } cannot be reversed.`
     }
 
     confirm() {
-        const { data, task, board } = this
-        const { isTask } = this.data
+        const { isTask, task, board } = this
 
-        if (isTask) task.column.removeTask(task.id)
+        if (isTask) this.task.column.removeTask(task.id)
         else board.app.removeBoard(board.id)
 
-        data.isTask = null
-
-        this.el.close()
+        this.close()
     }
 
-    render() {
+    renderContent() {
         return html`
         
-        <dialog id="${this.id}" @click="${() => this.el.close()}">
-            <h2>Delete this ${() => this.data.isTask ? 'Task' : 'Board'}?</h2>
+        <h2>Delete this ${this.isTask ? 'Task' : 'Board'}?</h2>
 
-            ${() => this.renderText()}
+        <p>${this.getText()}</p>
 
-            <menu>
-                <li>
-                    <button @click="${() => this.confirm()}">
-                        Delete
-                    </button>
-                </li>
-                <li>
-                    <button @click="${() => this.el.close()}">
-                        Cancel
-                    </button>
-                </li>
-            </menu>
-        </dialog>
+        <menu>
+            <li>
+                <button @click="${() => this.confirm()}">
+                    Delete
+                </button>
+            </li>
+            <li>
+                <button @click="${() => this.close()}">
+                    Cancel
+                </button>
+            </li>
+        </menu>
         
-        `
-    }
-        
-    renderText() {
-        const { data, task, board } = this
-        const { isTask } = data
-
-        if (isTask == null) return ''
-
-        return isTask ? html`
-
-        <p>Are you sure you want to delete the ‘${() => task.getTitle()}’ task and its subtasks? This action cannot be reversed.</p>
-
-        ` : html`
-        
-        <p>Are you sure you want to delete the ‘${() => board.getName()}’ board? This action will remove all columns and tasks and cannot be reversed.</p>
-
         `
     }
 }

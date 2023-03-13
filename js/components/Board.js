@@ -130,32 +130,30 @@ export class Board {
     }
 
     render() {
-        const { data } = this
+        const { data, app } = this
 
         return html`
         
         <header>
             <h2>${() => data.name}</h2>
-            <button disabled="${() => data.columnsIds.length == 0}"
-                @click="${() => this.app.taskDialog.showForm()}">
-                
+            <button @click="${() => app.taskDialog.showForm({ board: this })}">
                 Add New Task
             </button>
-            <button class="board__toggleMenuBtn" id="dropdownBoardMenuBtn"
+            <button class="dropdown-btn" id="dropdownBoardMenuBtn"
                 aria-haspopup="true"
                 aria-expanded="${() => data.menuIsOpen}"
                 @click="${() => data.menuIsOpen = !data.menuIsOpen}">
                 
                 <span class="visually-hidden">Show menu</span>
             </button>
-            <menu class="board__menu"
+            <menu class="dropdown-menu"
                 aria-labelledby="dropdownBoardMenuBtn">
                 
                 <li>
-                    <button @click="${() => this.app.boardDialog.show(this)}">
+                    <button @click="${() => app.boardFormDialog.showEdit(this)}">
                         Edit Board
                     </button>
-                    <button @click="${() => this.app.confirmDialog.showBoard(this)}">
+                    <button @click="${() => app.confirmDialog.showBoard(this)}">
                         Delete Board
                     </button>
                 </li>

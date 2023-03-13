@@ -18,7 +18,7 @@ dialog {
     gap: 20px;
 }
 
-.board__toggleMenuBtn:not([aria-expanded]) + .board__menu {
+.dropdown-btn:not([aria-expanded]) + .dropdown-menu {
     display: none;
 }
 
@@ -32,4 +32,13 @@ dialog {
     margin-bottom: 10px;
     border: 1px solid red;
     cursor: pointer;
+}
+
+.subtask,
+.subtask :is(input, label) {
+    cursor: pointer;
+}
+
+.subtask input:checked + label {
+    text-decoration: line-through;
 }
