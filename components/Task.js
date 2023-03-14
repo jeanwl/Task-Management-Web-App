@@ -1,6 +1,5 @@
 import { Subtask } from './Subtask.js'
-import { reactive, html } from '../lib/arrow.js'
-import { generateId } from '../helpers.js'
+import { reactive, html } from '/js/arrow.js'
 
 export class Task {
     subtasks = {}

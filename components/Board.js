@@ -1,6 +1,6 @@
 import { Column } from './Column.js'
-import { reactive, html } from '../lib/arrow.js'
-import { generateId } from '../helpers.js'
+import { reactive, html } from '/js/arrow.js'
+import { generateId } from '/js/helpers.js'
 
 export class Board {
     columns = {}
@@ -39,7 +39,9 @@ export class Board {
     }
 
     getColumns() {
-        return Object.values(this.columns)
+        const { columns } = this
+        
+        return this.data.columnsIds.map(id => columns[id])
     }
 
     load() {
@@ -89,7 +91,7 @@ export class Board {
     }
 
     removeSave() {
-        for (const column of Object.values(this.columns)) {
+        for (const column of this.getColumns()) {
             column.removeSave()
         }
 
@@ -166,12 +168,10 @@ export class Board {
     }
 
     renderColumns() {
-        const { data, columns } = this
-
-        return data.columnsIds.map(id => {
+        return this.getColumns().map(column => {
             return html`
             
-            <li class="column">${() => columns[id].render()}</li>
+            <li class="column">${() => column.render()}</li>
 
             `
         })

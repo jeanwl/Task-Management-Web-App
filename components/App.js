@@ -1,9 +1,10 @@
 import { Board } from './Board.js'
-import { BoardFormDialog } from './BoardFormDialog.js'
-import { TaskDialog } from './TaskDialog.js'
-import { ConfirmDialog } from './ConfirmDialog.js'
-import { loadDataSample } from '../loadDataSample.js'
-import { reactive, html } from '../lib/arrow.js'
+import { BoardFormDialog } from './dialogs/BoardFormDialog.js'
+import { TaskDialog } from './dialogs/TaskDialog.js'
+import { TaskFormDialog } from './dialogs/TaskFormDialog.js'
+import { ConfirmDialog } from './dialogs/ConfirmDialog.js'
+import { loadDataSample } from '/js/loadDataSample.js'
+import { reactive, html } from '/js/arrow.js'
 
 export class App {
     boards = {}
@@ -11,15 +12,14 @@ export class App {
     storageKey = 'app'
     boardFormDialog = new BoardFormDialog()
     taskDialog = new TaskDialog()
+    taskFormDialog = new TaskFormDialog()
     confirmDialog = new ConfirmDialog()
 
     data = reactive({
         boardsIds: [],
-        currentBoard: 0,
-        showSidebar: true,
         isDark: matchMedia('(prefers-color-scheme: dark)').matches
     })
-    keysToSave = ['boardsIds', 'currentBoard', 'showSidebar', 'isDark']
+    keysToSave = ['boardsIds', 'currentBoard', 'hideSidebar', 'isDark']
     
     constructor() {
         // remove
@@ -44,22 +44,21 @@ export class App {
             return this.load()
         }
         
-        const { boardsIds, currentBoard, showSidebar, isDark } = JSON.parse(savedData)
+        const { boardsIds, currentBoard, hideSidebar, isDark } = JSON.parse(savedData)
         const { data } = this
 
         for (const id of boardsIds) this.addBoard({ id, wasSaved: true })
         
-        data.currentBoard = currentBoard ?? data.boardsIds[0]
+        data.currentBoard = currentBoard
+        data.hideSidebar = hideSidebar
         
-        if (showSidebar != null) data.showSidebar = showSidebar
         if (isDark != null) data.isDark = isDark
     }
 
     save() {
         const { data } = this
-        const entries = this.keysToSave.map(key => (
-            [key, data[key]]
-        ))
+        const entries = this.keysToSave.map(key => [key, data[key]])
+        
         const save = Object.fromEntries(entries)
 
         localStorage.setItem(this.storageKey, JSON.stringify(save))
@@ -69,10 +68,10 @@ export class App {
         this.boards[id] = new Board({ app: this, id, name, columnsNames, wasSaved })
         
         const { data } = this
-        
-        data.boardsIds.push(id)
 
         if (!wasSaved) data.currentBoard = id
+        
+        data.boardsIds.push(id)
     }
 
     removeBoard(id) {
@@ -92,11 +91,11 @@ export class App {
     render() {
         const { data } = this
         
-        const showSidebarBtn = () => data.showSidebar ? '' : html`
+        const showSidebarBtn = () => data.hideSidebar ? html`
         
-        <button @click="${() => data.showSidebar = true}">Show Sidebar</button>
+        <button @click="${() => data.hideSidebar = false}">Show Sidebar</button>
 
-        `
+        ` : ''
 
         return html`
         
@@ -115,25 +114,17 @@ export class App {
 
             ${() => this.boardFormDialog.render()}
             ${() => this.taskDialog.render()}
+            ${() => this.taskFormDialog.render()}
             ${() => this.confirmDialog.render()}
         </div>
 
         `
     }
 
-    renderBoard() {
-        const { data } = this
-        const { boardsIds } = data
-
-        if (boardsIds.length == 0) return ''
-
-        return this.boards[data.currentBoard].render()
-    }
-
     renderSidebar() {
         const { data } = this
 
-        if (!data.showSidebar) return ''
+        if (data.hideSidebar) return ''
 
         return html`
             
@@ -149,9 +140,18 @@ export class App {
             </button>
         </div>
 
-        <button @click="${() => data.showSidebar = false}">Hide Sidebar</button>
+        <button @click="${() => data.hideSidebar = true}">Hide Sidebar</button>
         
         `
+    }
+
+    renderBoard() {
+        const { data } = this
+        const { boardsIds } = data
+
+        if (boardsIds.length == 0) return ''
+
+        return this.boards[data.currentBoard].render()
     }
 
     renderBoardList() {

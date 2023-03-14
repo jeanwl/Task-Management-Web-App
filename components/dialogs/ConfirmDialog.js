@@ -1,5 +1,5 @@
 import { Dialog } from './Dialog.js'
-import { html } from '../lib/arrow.js'
+import { html } from '/js/arrow.js'
 
 export class ConfirmDialog extends Dialog {
     id = 'confirmDialog'

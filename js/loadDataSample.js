@@ -493,7 +493,10 @@ const loadBoards = () => {
 }
 
 export const loadDataSample = () => {
+    const boardsIds = loadBoards()
+
     return {
-        boardsIds: loadBoards()
+        boardsIds,
+        currentBoard: boardsIds[0]
     }
 }

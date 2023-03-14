@@ -1,6 +1,6 @@
 import { Dialog } from './Dialog.js'
-import { reactive, html } from '../lib/arrow.js'
-import { generateId } from '../helpers.js'
+import { reactive, html } from '/js/arrow.js'
+import { generateId } from '/js/helpers.js'
 
 export class BoardFormDialog extends Dialog {
     id = 'boardFormDialog'
@@ -14,7 +14,7 @@ export class BoardFormDialog extends Dialog {
             this.newColumn(name)
         ))
 
-        this.data.columns = reactive(columns)
+        this.columns = reactive(columns)
 
         this.show()
     }
@@ -32,7 +32,7 @@ export class BoardFormDialog extends Dialog {
             return newColumn
         })
 
-        this.data.columns = reactive(columns)
+        this.columns = reactive(columns)
 
         this.show()
     }
@@ -55,7 +55,7 @@ export class BoardFormDialog extends Dialog {
 
         if (this.isEdit) {
             const { idsMap } = this
-            const columns = this.data.columns.map(({id}, i) => {
+            const columns = this.columns.map(({id}, i) => {
                 const isNew = !(id in idsMap)
                 
                 return {
@@ -76,7 +76,7 @@ export class BoardFormDialog extends Dialog {
     }
 
     renderContent() {
-        const { isEdit, data } = this
+        const { isEdit } = this
 
         return html`
         
@@ -94,7 +94,7 @@ export class BoardFormDialog extends Dialog {
                 ${() => this.renderColumns()}
 
                 <button type="button"
-                    @click="${() => data.columns.push(this.newColumn())}">
+                    @click="${() => this.columns.push(this.newColumn())}">
                     
                     Add New Column
                 </button>
@@ -109,7 +109,7 @@ export class BoardFormDialog extends Dialog {
     }
 
     renderColumns() {
-        const { columns } = this.data
+        const { columns } = this
 
         return columns.map(({name, id}, i) => {
             const removeBtn = () => columns.length < 2 ? '' : html`

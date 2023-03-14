@@ -1,6 +1,5 @@
-import { reactive, html } from '../lib/arrow.js'
-import { generateId } from '../helpers.js'
 import { Task } from './Task.js'
+import { reactive, html } from '/js/arrow.js'
 
 export class Column {
     tasks = {}

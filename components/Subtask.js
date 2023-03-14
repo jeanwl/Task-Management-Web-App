@@ -1,4 +1,4 @@
-import { reactive, html } from '../lib/arrow.js'
+import { reactive, html } from '/js/arrow.js'
 
 export class Subtask {
     data = reactive({
