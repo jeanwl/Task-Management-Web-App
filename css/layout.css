@@ -26,7 +26,10 @@
     width: 153px;
     height: 26px;
     margin-left: 34px;
-    background-image: url(/images/logo-dark.svg), url(/images/logo-light.svg);
+    background-image: url(../images/logo-dark.svg), url(../images/logo-light.svg);
+}
+.app[data-is-dark] .kanban-logo {
+    background-size: 0, 100%;
 }
 
 .app__content {
@@ -104,11 +107,11 @@
     border-radius: 6px;
 }
 .sidebar__theme-btn:before {
-    content: url(/images/icon-light-theme.svg);
+    content: url(../images/icon-light-theme.svg);
     margin-right: 24px;
 }
 .sidebar__theme-btn:after {
-    content: url(/images/icon-dark-theme.svg);
+    content: url(../images/icon-dark-theme.svg);
     margin-left: 24px;
 }
 
@@ -144,7 +147,7 @@
     color: var(--gray);
 }
 .sidebar__hide-btn:before {
-    content: url(/images/icon-hide-sidebar.svg);
+    content: url(../images/icon-hide-sidebar.svg);
     margin-right: 15px;
 }
 
@@ -153,7 +156,7 @@
     bottom: 32px;
     width: 56px;
     height: 48px;
-    background: var(--purple) url(/images/icon-show-sidebar.svg) no-repeat center;
+    background: var(--purple) url(../images/icon-show-sidebar.svg) no-repeat center;
     border-radius: 0 24px 24px 0;
 }
 
