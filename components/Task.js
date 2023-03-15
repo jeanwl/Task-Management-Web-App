@@ -1,17 +1,16 @@
 import { Subtask } from './Subtask.js'
 import { reactive, html } from '/js/arrow.js'
+import { generateId } from '/js/helpers.js'
 
 export class Task {
     subtasks = {}
-
-    data = reactive({
-        title: '',
-        description: '',
-        subtasksIds: []
-    })
     keysToSave = ['title', 'description', 'subtasksIds']
 
-    constructor({ column, id, title, description, wasSaved }) {
+    data = reactive({
+        subtasksIds: []
+    })
+
+    constructor({ column, id, title, description, subtasksTitles, wasSaved }) {
         this.column = column
         this.id = id
         this.storageKey = `task_${id}`
@@ -29,6 +28,10 @@ export class Task {
 
         data.title = title
         data.description = description
+
+        for (const title of subtasksTitles) {
+            this.addSubtask({ id: generateId(), title })
+        }
     }
 
     getTitle() {
@@ -44,10 +47,8 @@ export class Task {
     }
 
     getNCompleted() {
-        const { subtasks } = this
-
-        return this.data.subtasksIds.filter((id) => (
-            subtasks[id].getIsCompleted()
+        return this.getSubtasks().filter(subtask => (
+            subtask.getIsCompleted()
         )).length
     }
 
@@ -56,28 +57,24 @@ export class Task {
         
         const { title, description, subtasksIds } = JSON.parse(savedData)
         
-        if (subtasksIds) {
-            for (const id of subtasksIds) this.addSubtask({ id, wasSaved: true })
-        }
+        for (const id of subtasksIds) this.addSubtask({ id, wasSaved: true })
 
         const { data } = this
         
-        if (title != null) data.title = title
-        if (description != null) data.description = description
+        data.title = title
+        data.description = description
     }
 
     save() {
         const { data } = this
-        const entries = this.keysToSave.map(key => (
-            [key, data[key]]
-        ))
+        const entries = this.keysToSave.map(key => [key, data[key]])
         const save = Object.fromEntries(entries)
 
         localStorage.setItem(this.storageKey, JSON.stringify(save))
     }
 
-    addSubtask({ id, title, isCompleted, wasSaved }) {
-        this.subtasks[id] = new Subtask({ task: this, id, title, isCompleted, wasSaved })
+    addSubtask({ id, title, wasSaved }) {
+        this.subtasks[id] = new Subtask({ task: this, id, title, wasSaved })
         
         this.data.subtasksIds.push(id)
     }
@@ -96,7 +93,7 @@ export class Task {
 
         return html`
         
-        <li class="task" @click="${() => this.taskDialog.showInfo(this)}">
+        <li class="task" @click="${() => this.taskDialog.show(this)}">
             <h4>${() => data.title}</h4>
             <p>${() => this.getNCompleted()} of ${() => subtasksIds.length} subtasks</p>
         </li>

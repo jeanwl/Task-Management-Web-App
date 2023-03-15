@@ -2,7 +2,7 @@ import { reactive, html } from '/js/arrow.js'
 
 export class Dialog {
     data = reactive({})
-
+    
     get el() {
         return window[this.id]
     }

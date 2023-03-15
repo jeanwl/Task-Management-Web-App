@@ -1,13 +1,11 @@
 import { reactive, html } from '/js/arrow.js'
 
 export class Subtask {
-    data = reactive({
-        title: '',
-        isCompleted: false
-    })
     keysToSave = ['title', 'isCompleted']
+    
+    data = reactive({})
 
-    constructor({ task, id, title, isCompleted, wasSaved }) {
+    constructor({ task, id, title, wasSaved }) {
         this.task = task
         this.id = id
         this.storageKey = `subtask_${id}`
@@ -23,7 +21,7 @@ export class Subtask {
         if (wasSaved) return
 
         data.title = title
-        data.isCompleted = isCompleted
+        data.isCompleted = false
     }
 
     getTitle() {
@@ -41,15 +39,13 @@ export class Subtask {
 
         const { data } = this
         
-        if (title != null) data.title = title
-        if (isCompleted != null) data.isCompleted = isCompleted
+        data.title = title
+        data.isCompleted = isCompleted
     }
 
     save() {
         const { data } = this
-        const entries = this.keysToSave.map(key => (
-            [key, data[key]]
-        ))
+        const entries = this.keysToSave.map(key => [key, data[key]])
         const save = Object.fromEntries(entries)
 
         localStorage.setItem(this.storageKey, JSON.stringify(save))
@@ -70,7 +66,11 @@ export class Subtask {
 
         return html`
         
-
+        <input type="checkbox" id="${this.id}"
+            checked="${() => data.isCompleted}"
+            @change="${() => data.isCompleted = !data.isCompleted}">
+        
+        <label for="${this.id}">${data.title}</label>
 
         `
     }

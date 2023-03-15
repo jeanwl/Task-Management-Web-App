@@ -18,10 +18,6 @@ dialog {
     gap: 20px;
 }
 
-.dropdown-btn:not([aria-expanded]) + .dropdown-menu {
-    display: none;
-}
-
 .column {
     display: block;
     width: 200px;

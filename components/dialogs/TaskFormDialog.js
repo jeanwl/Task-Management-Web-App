@@ -9,16 +9,27 @@ export class TaskFormDialog extends Dialog {
         'e.g. Drink coffee & smile'
     ]
 
-    showNew() {
-        
+    showNew(board) {
+        this.isEdit = false
+        this.board = board
+
+        this.buildColumnsOptions(board)
+
+        this.subtasks = reactive(Array.from({ length: 2 }, _ => this.newSubtask()))
+
+        this.show()
     }
 
     showEdit() {
 
     }
 
-    buildColumnsOptions() {
-        
+    buildColumnsOptions(board) {
+        const columnsOptions = board.getColumns().map(column => (
+            {name: column.getName(), id: column.id}
+        ))
+
+        this.columnsOptions = reactive(columnsOptions)
     }
 
     newSubtask(title) {
@@ -32,18 +43,14 @@ export class TaskFormDialog extends Dialog {
 
     }
 
-    onColumnChange(e) {
-
-    }
-
     onSubmit(e) {
         const formData = new FormData(e.target)
         const title = formData.get('title')
         const description = formData.get('description')
-        const columnKey = formData.get('column')
-        const subtasksNames = formData.getAll('subtask')
+        const columnId = formData.get('column')
+        const subtasksTitles = formData.getAll('subtask')
 
-        if (this.data.isEdit) {
+        if (this.isEdit) {
             const { idsMap } = this
             const subtasks = this.data.subtasks.map(({id}, i) => {
                 const isNew = !(id in idsMap)
@@ -61,10 +68,17 @@ export class TaskFormDialog extends Dialog {
 
             return this.task.edit({ title, description, subtasks })
         }
+
+        this.board.columns[columnId].addTask({
+            id: generateId(),
+            title,
+            description,
+            subtasksTitles
+        })
     }
 
     renderContent() {
-        const { isEdit } = this
+        const { isEdit, task, subtasks } = this
 
         return html`
         
@@ -73,20 +87,17 @@ export class TaskFormDialog extends Dialog {
 
             <label for="title">Title</label>
             <input type="text" name="title" required
-                value="${() => title}"
+                value="${isEdit ? task.getName() : ''}"
                 placeholder="e.g. Take coffee break">
 
             <label for="description">Title</label>
             <textarea name="description" required
                 placeholder="e.g. It’s always good to take a break. This 15 minute break will 
-                recharge the batteries a little.">
-
-                ${() => description}
-            </textarea>
+                recharge the batteries a little.">${isEdit ? task.getDescription() : ''}</textarea>
 
             <fieldset>
                 <label for="subtask">Subtasks</label>
-                ${() => this.renderFormSubtasks()}
+                ${() => this.renderSubtasks()}
 
                 <button type="button"
                     @click="${() => subtasks.push(this.newSubtask())}">
@@ -98,7 +109,7 @@ export class TaskFormDialog extends Dialog {
             ${this.renderColumnSelect()}
             
             <button type="submit">
-                ${() => isEdit ? 'Save Changes' : 'Create New Board'}
+                ${isEdit ? 'Save Changes' : 'Create New Task'}
             </button>
         </form>
 
@@ -106,14 +117,14 @@ export class TaskFormDialog extends Dialog {
     }
 
     renderSubtasks() {
-        const { subtasks } = this.data
+        const { subtasks } = this
 
         return subtasks.map(({title, id}, i) => {
             return html`
         
             <li>
                 <input type="text" name="subtask" value="${title}" required
-                    placeholder="${this.subtasksPlaceholders[i] ?? ''}">
+                    placeholder="${() => this.subtasksPlaceholders[i] ?? ''}">
                 
                 <button type="button" @click="${() => subtasks.splice(i, 1)}">
                     <span class="visually-hidden">Remove Subtask</span>
@@ -125,7 +136,7 @@ export class TaskFormDialog extends Dialog {
     }
 
     renderColumnSelect() {
-        if (this.data.columnsOptions.length < 2) return ''
+        if (this.columnsOptions.length < 2) return ''
 
         return html`
         
@@ -138,14 +149,10 @@ export class TaskFormDialog extends Dialog {
     }
 
     renderColumnsOptions() {
-        const { data } = this
-
-        return data.columnsOptions.map(({ key, text }) => {
+        return this.columnsOptions.map(({ id, name }) => {
             return html`
             
-            <option value="${key}" selected=${key == data.currentColumnKey}>
-                ${text}"
-            </option>
+            <option value="${id}">${name}</option>
 
             `
         })

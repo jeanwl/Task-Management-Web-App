@@ -10,6 +10,8 @@ export class App {
     boards = {}
     maxBoard = 10
     storageKey = 'app'
+    keysToSave = ['boardsIds', 'currentBoard', 'hideSidebar', 'isDark']
+    
     boardFormDialog = new BoardFormDialog()
     taskDialog = new TaskDialog()
     taskFormDialog = new TaskFormDialog()
@@ -19,7 +21,6 @@ export class App {
         boardsIds: [],
         isDark: matchMedia('(prefers-color-scheme: dark)').matches
     })
-    keysToSave = ['boardsIds', 'currentBoard', 'hideSidebar', 'isDark']
     
     constructor() {
         // remove
@@ -58,7 +59,6 @@ export class App {
     save() {
         const { data } = this
         const entries = this.keysToSave.map(key => [key, data[key]])
-        
         const save = Object.fromEntries(entries)
 
         localStorage.setItem(this.storageKey, JSON.stringify(save))

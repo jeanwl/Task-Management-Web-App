@@ -4,13 +4,11 @@ import { generateId } from '/js/helpers.js'
 
 export class Board {
     columns = {}
+    keysToSave = ['name', 'columnsIds']
 
     data = reactive({
-        name: '',
-        columnsIds: [],
-        menuIsOpen: false
+        columnsIds: []
     })
-    keysToSave = ['name', 'columnsIds']
 
     constructor({ app, id, name, columnsNames, wasSaved }) {
         this.app = app
@@ -56,9 +54,7 @@ export class Board {
 
     save() {
         const { data } = this
-        const entries = this.keysToSave.map(key => (
-            [key, data[key]]
-        ))
+        const entries = this.keysToSave.map(key => [key, data[key]])
         const save = Object.fromEntries(entries)
 
         localStorage.setItem(this.storageKey, JSON.stringify(save))
@@ -134,11 +130,28 @@ export class Board {
     render() {
         const { data, app } = this
 
+        const dropdownMenu = () => data.menuIsOpen ? html`
+        
+        <menu class="dropdown-menu"
+            aria-labelledby="dropdownBoardMenuBtn">
+            
+            <li>
+                <button @click="${() => app.boardFormDialog.showEdit(this)}">
+                    Edit Board
+                </button>
+                <button @click="${() => app.confirmDialog.showBoard(this)}">
+                    Delete Board
+                </button>
+            </li>
+        </menu>
+
+        ` : ''
+
         return html`
         
         <header>
             <h2>${() => data.name}</h2>
-            <button @click="${() => app.taskDialog.showForm({ board: this })}">
+            <button @click="${() => app.taskFormDialog.showNew(this)}">
                 Add New Task
             </button>
             <button class="dropdown-btn" id="dropdownBoardMenuBtn"
@@ -148,18 +161,8 @@ export class Board {
                 
                 <span class="visually-hidden">Show menu</span>
             </button>
-            <menu class="dropdown-menu"
-                aria-labelledby="dropdownBoardMenuBtn">
-                
-                <li>
-                    <button @click="${() => app.boardFormDialog.showEdit(this)}">
-                        Edit Board
-                    </button>
-                    <button @click="${() => app.confirmDialog.showBoard(this)}">
-                        Delete Board
-                    </button>
-                </li>
-            </menu>
+
+            ${dropdownMenu}
         </header>
 
         <ul class="board__content">${() => this.renderColumns()}</ul>
