@@ -153,8 +153,12 @@ export class Task {
         return html`
         
         <li class="task" @click="${() => this.taskDialog.show(this)}">
-            <h4>${() => data.title}</h4>
-            <p>${() => this.getNCompleted()} of ${() => subtasksIds.length} subtasks</p>
+            <h4 class="task__title | title title--m">
+                ${() => data.title}
+            </h4>
+            <p class="task__completed | text text--m">
+                ${() => `${this.getNCompleted()} of ${subtasksIds.length} subtasks`}
+            </p>
         </li>
 
         `

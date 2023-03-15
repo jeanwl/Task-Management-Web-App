@@ -154,12 +154,14 @@ export class Board {
 
         return html`
         
-        <header>
-            <h2>${() => data.name}</h2>
-            <button @click="${() => app.taskFormDialog.showNew(this)}">
+        <header class="board__header">
+            <h2 class="title title--xl">${() => data.name}</h2>
+            <button class="new-task-btn | btn btn--large btn--primary"
+                @click="${() => app.taskFormDialog.showNew(this)}">
+                
                 Add New Task
             </button>
-            <button class="dropdown-btn" id="dropdownBoardMenuBtn"
+            <button class="dropdown-toggle" id="dropdownBoardMenuBtn"
                 aria-haspopup="true"
                 aria-expanded="${() => data.menuIsOpen}"
                 @click="${() => data.menuIsOpen = !data.menuIsOpen}">

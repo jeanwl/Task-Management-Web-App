@@ -1,0 +1,73 @@
+.title {
+    font-weight: 700;
+}
+.title--xl {
+    font-size: 24px;
+}
+.title--l {
+    font-size: 18px;
+}
+.title--m {
+    font-size: 15px;
+}
+.title--s {
+    font-size: 12px;
+    letter-spacing: 2.4px;
+    text-transform: uppercase;
+    color: var(--gray);
+}
+
+.text--l {
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 23px;
+}
+.text--m {
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.btn {
+    transition-property: color, background-color;
+    transition-duration: .2s;
+}
+.btn--large {
+    height: 48px;
+    font-size: 15px;
+    border-radius: 24px;
+}
+.btn--small {
+    height: 40px;
+    font-size: 13px;
+    border-radius: 20px;
+}
+.btn--primary {
+    background-color: var(--purple);
+    color: white;
+}
+.btn--primary:hover {
+    background-color: var(--light-purple);
+}
+.btn--secondary {
+    background-color: var(--light-lavender);
+    color: var(--purple);
+}
+.btn--secondary:hover {
+    background-color: var(--soft-lavender);
+}
+[data-is-dark] :is(.btn--secondary, btn--secondary:hover) {
+    background-color: white;
+}
+.btn--destructive {
+    background-color: var(--red);
+}
+.btn--destructive:hover {
+    background-color: var(--light-red);
+}
+
+.dropdown-toggle {
+    width: 42px;
+    height: 48px;
+    margin-left: 12px;
+    background: url(/images/icon-vertical-ellipsis.svg) no-repeat center;
+}

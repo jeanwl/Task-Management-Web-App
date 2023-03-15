@@ -91,24 +91,31 @@ export class App {
         
         const showSidebarBtn = () => data.hideSidebar ? html`
         
-        <button @click="${() => data.hideSidebar = false}">Show Sidebar</button>
+        <button class="show-sidebar-btn"
+            @click="${() => data.hideSidebar = false}">
+            
+            <span class="visually-hidden">Show Sidebar</span>
+        </button>
 
         ` : ''
 
         return html`
         
         <div class="app" data-is-dark="${() => data.isDark}">
-            <header>
-                <h1>kanban</h1>
+            <header class="app__header">
+                <h1 class="kanban-logo">
+                    <span class="visually-hidden">Kanban</span>
+                </h1>
             </header>
 
-            <main>
-                <aside>${() => this.renderSidebar()}</aside>
+            <main class="app__content">
+                ${() => this.renderSidebar()}
+                ${showSidebarBtn}
                 
-                <section>${() => this.renderBoard()}</section>
+                <section class="board">
+                    ${() => this.renderBoard()}
+                </section>
             </main>
-
-            ${showSidebarBtn}
 
             ${() => this.boardFormDialog.render()}
             ${() => this.taskDialog.render()}
@@ -126,19 +133,30 @@ export class App {
 
         return html`
             
-        <h2>All boards (${() => data.boardsIds.length})</h2>
+        <aside class="sidebar">
+            <h2 class="sidebar__title | title title--s">
+                ${() => `All boards (${data.boardsIds.length})`}
+            </h2>
 
-        <menu class="boards">${() => this.renderBoardList()}</menu>
-        
-        ${() => this.renderNewBoardBtn()}
+            <menu class="sidebar__boards">${() => this.renderBoardList()}</menu>
+            
+            ${() => this.renderNewBoardBtn()}
 
-        <div class="theme-wrapper" aria-pressed="">
-            <button @click="${() => data.isDark = !data.isDark}">
-                <span class="visually-hidden">Toggle theme</span>
+            <button class="sidebar__theme-btn"
+                aria-pressed="${() => data.isDark}"
+                @click="${() => data.isDark = !data.isDark}">
+                
+                <span class="theme-btn__toggler">
+                    <span class="visually-hidden">Toggle theme</span>
+                </span>
             </button>
-        </div>
 
-        <button @click="${() => data.hideSidebar = true}">Hide Sidebar</button>
+            <button class="sidebar__hide-btn | title title--m"
+                @click="${() => data.hideSidebar = true}">
+                
+                Hide Sidebar
+            </button>
+        </aside>
         
         `
     }
@@ -158,10 +176,11 @@ export class App {
         return data.boardsIds.map(id => {
             return html`
         
-            <li class="boards__item"
+            <li class="sidebar__board | title title--m"
                 aria-current="${() => data.currentBoard == id}">
                 
                 <button @click="${() => data.currentBoard = id}">
+                    <svg class="board-icon"><use href="#board-icon"></svg>
                     ${() => this.boards[id].getName()}
                 </button>
             </li>
@@ -175,8 +194,11 @@ export class App {
             
         return html`
         
-        <button @click="${() => this.boardFormDialog.showNew(this)}">
-            Create New Board
+        <button class="sidebar__new-board-btn | title title--m"
+            @click="${() => this.boardFormDialog.showNew(this)}">
+            
+            <svg class="board-icon"><use href="#board-icon"></svg>
+            + Create New Board
         </button>
         
         `

@@ -93,9 +93,11 @@ export class Column {
 
         return html`
         
-        <h3>${() => data.name} (${() => data.tasksIds.length})</h3>
+        <h3 class="column__name | title title--s">
+            ${() => `${data.name} (${data.tasksIds.length})`}
+        </h3>
 
-        <ul>${() => this.renderTasks()}</ul>
+        <ul class="tasks">${() => this.renderTasks()}</ul>
         
         `
     }
