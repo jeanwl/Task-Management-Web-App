@@ -28,6 +28,10 @@ export class Subtask {
         return this.data.title
     }
 
+    setTitle(title) {
+        this.data.title = title
+    }
+
     getIsCompleted() {
         return this.data.isCompleted
     }

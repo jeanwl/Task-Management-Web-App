@@ -78,20 +78,18 @@ export class Board {
         delete columns[id]
     }
 
-    moveColumn(from, to) {
+    moveColumn({ column, to }) {
         const { columnsIds } = this.data
-        const id = columnsIds[from]
+        const id = column.id
 
-        columnsIds.splice(from, 1)
+        columnsIds.splice(columnsIds.indexOf(id), 1)
         columnsIds.splice(to, 0, id)
     }
 
-    removeSave() {
-        for (const column of this.getColumns()) {
-            column.removeSave()
-        }
+    moveTask({ task, to }) {
+        task.column.removeTask({ id: task.id })
 
-        localStorage.removeItem(this.storageKey)
+        this.columns[to].insertTask(task)
     }
 
     edit({ name, columns: editedColumns }) {
@@ -104,16 +102,15 @@ export class Board {
             if (isNew) {
                 this.addColumn({ id, name })
                 
-                return this.moveColumn(columnsIds.length - 1, i)
+                return this.moveColumn({ column: columns[id], to: i})
             }
 
-            columns[id].setName(name)
+            const column = columns[id]
+            column.setName(name)
 
-            const index = columnsIds.indexOf(id)
+            if (columnsIds.indexOf(id) == i) return
 
-            if (index == i) return
-
-            this.moveColumn(index, i)
+            this.moveColumn({ column, to: i })
         })
 
         const nToRemove = columnsIds.length - editedColumns.length
@@ -125,6 +122,14 @@ export class Board {
         for (const id of idsToRemove) {
             this.removeColumn(id)
         }
+    }
+
+    removeSave() {
+        for (const column of this.getColumns()) {
+            column.removeSave()
+        }
+
+        localStorage.removeItem(this.storageKey)
     }
 
     render() {

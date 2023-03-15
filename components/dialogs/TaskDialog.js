@@ -19,19 +19,23 @@ export class TaskDialog extends Dialog {
 
     buildColumnsOptions(board) {
         const columnsOptions = board.getColumns().map(column => (
-            {name: column.getName(), id: column.id}
+            { name: column.getName(), id: column.id }
         ))
 
-        this.columnsOptions = reactive(columnsOptions)
+        this.columnsOptions = columnsOptions
     }
 
     onColumnChange(e) {
+        const columnId = e.target.value
 
+        this.task.column.board.moveTask({ task: this.task, to: columnId})
     }
 
     renderContent() {
         const { data, task } = this
-        const { board } = task.column
+        const { app } = task.column.board
+
+        data.menuIsOpen = false
 
         const dropdownMenu = () => data.menuIsOpen ? html`
         
@@ -39,10 +43,10 @@ export class TaskDialog extends Dialog {
             aria-labelledby="dropdownTaskDialogMenuBtn">
             
             <li>
-                <button @click="${() => board.taskFormDialog.showEdit(task)}">
+                <button @click="${() => app.taskFormDialog.showEdit(task)}">
                     Edit Task
                 </button>
-                <button @click="${() => task.column.removeTask(task.id)}">
+                <button @click="${() => app.confirmDialog.showTask(task)}">
                     Delete Task
                 </button>
             </li>
@@ -50,41 +54,46 @@ export class TaskDialog extends Dialog {
 
         ` : ''
 
-        const nSubtasks = task.getSubtasks().length
-        const subtaskTitle = nSubtasks ? html`
-        
-        <h5>Subtasks (${() => task.getNCompleted()} of ${nSubtasks})</h5>
-        
-        ` : ''
-
         return html`
         
-        <form method="dialog">
-            <div class="task-dialog__top">
-                <h4>${task.getTitle()}</h4>
+        <div class="task-dialog__top">
+            <h4>${() => task.getTitle()}</h4>
+            
+            <button class="dropdown-btn" id="dropdownTaskDialogMenuBtn"
+                aria-haspopup="true"
+                aria-expanded="${() => data.menuIsOpen}"
+                @click="${() => data.menuIsOpen = !data.menuIsOpen}">
                 
-                <button class="dropdown-btn" id="dropdownTaskDialogMenuBtn"
-                    aria-haspopup="true" type="button"
-                    aria-expanded="${() => data.menuIsOpen}"
-                    @click="${() => data.menuIsOpen = !data.menuIsOpen}">
-                    
-                    <span class="visually-hidden">Show menu</span>
-                </button>
-                
-                ${dropdownMenu}
-            </div>
+                <span class="visually-hidden">Show menu</span>
+            </button>
+            
+            ${dropdownMenu}
+        </div>
 
-            <p>${task.getDescription()}</p>
+        <p>${() => task.getDescription()}</p>
 
-            ${subtaskTitle}
-            ${this.renderSubtasks()}
+        ${() => this.renderSubtasks()}
 
-            ${this.renderColumnSelect()}
-        </form>
+        ${() => this.renderColumnSelect()}
         `
     }
 
     renderSubtasks() {
+        const { task } = this
+        const nSubtasks = task.getSubtasks().length
+
+        if (!nSubtasks) return ''
+
+        return html`
+        
+        <h5>Subtasks (${() => task.getNCompleted()} of ${nSubtasks})</h5>
+        
+        ${() => this.renderSubtasksList()}
+        
+        `
+    }
+
+    renderSubtasksList() {
         return this.task.getSubtasks().map(subtask => {
             return html`
         
@@ -102,7 +111,9 @@ export class TaskDialog extends Dialog {
         return html`
         
         <label for="column">Column</label>
-        <select name="column" @change="${(e) => this.onColumnChange(e)}">
+        <select name="column"
+            @change="${(e) => this.onColumnChange(e)}">
+            
             ${() => this.renderColumnsOptions()}
         </select>
         
@@ -111,9 +122,13 @@ export class TaskDialog extends Dialog {
 
     renderColumnsOptions() {
         return this.columnsOptions.map(({ id, name }) => {
+            const isSelected = () => this.task.data.columnId == id
+            
             return html`
             
-            <option value="${id}">${name}</option>
+            <option value="${id}" selected="${isSelected}">
+                ${name}
+            </option>
 
             `
         })

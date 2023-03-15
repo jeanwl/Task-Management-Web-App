@@ -13,6 +13,10 @@ export class Dialog {
         setTimeout(() => this.el.showModal())
     }
 
+    close() {
+        this.el.close()
+    }
+
     onClose() {
         this.data.show = false
     }
@@ -21,7 +25,7 @@ export class Dialog {
         return this.data.show ? html`
         
         <dialog id="${this.id}"
-            @click="${() => this.el.close()}"
+            @click="${() => this.close()}"
             @close="${() => this.onClose()}">
             
             <div @click="${e => e.stopPropagation()}">

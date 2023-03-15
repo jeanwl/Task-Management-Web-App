@@ -6,6 +6,11 @@ dialog {
     padding: unset;
 }
 
+form {
+    display: flex;
+    flex-direction: column;
+}
+
 .app:not([data-is-dark]) {
     color-scheme: light;
 }

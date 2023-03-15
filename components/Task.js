@@ -12,6 +12,8 @@ export class Task {
 
     constructor({ column, id, title, description, subtasksTitles, wasSaved }) {
         this.column = column
+        this.data.columnId = column.id
+        this.data.$on('columnId', () => console.log('columnId changed'))
         this.id = id
         this.storageKey = `task_${id}`
         this.taskDialog = column.board.app.taskDialog
@@ -43,7 +45,9 @@ export class Task {
     }
 
     getSubtasks() {
-        return Object.values(this.subtasks)
+        const { subtasks } = this
+        
+        return this.data.subtasksIds.map(id => subtasks[id])
     }
 
     getNCompleted() {
@@ -77,6 +81,61 @@ export class Task {
         this.subtasks[id] = new Subtask({ task: this, id, title, wasSaved })
         
         this.data.subtasksIds.push(id)
+    }
+
+    removeSubtask(id) {
+        const { subtasksIds } = this.data
+
+        subtasksIds.splice(subtasksIds.indexOf(id), 1)
+        
+        const { subtasks } = this
+
+        subtasks[id].removeSave()
+
+        delete subtasks[id]
+    }
+
+    moveSubtask({ subtask, to }) {
+        return
+        const { subtasksIds } = this.data
+        const id = subtask.id
+
+        subtasksIds.splice(subtasksIds.indexOf(id), 1)
+        subtasksIds.splice(to, 0, id)
+    }
+
+    edit({ title, description, subtasks: editedSubtasks }) {
+        const { subtasks, data } = this
+        const { subtasksIds } = data
+
+        data.title = title
+        data.description = description
+        
+        editedSubtasks.forEach(({ id, title, isNew }, i) => {
+            const subtask = subtasks[id]
+            
+            if (isNew) {
+                this.addSubtask({ id, title })
+                
+                return this.moveSubtask({ subtask, to: i})
+            }
+
+            subtask.setTitle(title)
+
+            if (subtasksIds.indexOf(id) == i) return
+
+            this.moveSubtask({ subtask, to: i })
+        })
+
+        const nToRemove = subtasksIds.length - editedSubtasks.length
+
+        if (nToRemove < 1) return
+
+        const idsToRemove = subtasksIds.slice(nToRemove * -1)
+
+        for (const id of idsToRemove) {
+            this.removeSubtask(id)
+        }
     }
 
     removeSave() {

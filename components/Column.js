@@ -59,16 +59,25 @@ export class Column {
         this.data.tasksIds.push(id)
     }
 
-    removeTask(id) {
+    removeTask({ id, removeSave }) {
         const { tasksIds } = this.data
 
         tasksIds.splice(tasksIds.indexOf(id), 1)
         
         const { tasks } = this
 
-        tasks[id].removeSave()
+        if (removeSave) tasks[id].removeSave()
 
         delete tasks[id]
+    }
+
+    insertTask(task) {
+        const id = task.id
+
+        task.column = this
+        task.data.columnId = this.id
+        this.tasks[id] = task
+        this.data.tasksIds.push(id)
     }
 
     removeSave() {

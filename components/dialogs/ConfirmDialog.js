@@ -28,7 +28,10 @@ export class ConfirmDialog extends Dialog {
     confirm() {
         const { isTask, task, board } = this
 
-        if (isTask) this.task.column.removeTask(task.id)
+        if (isTask) {
+            this.task.column.removeTask({ id: task.id, removeSave: true })
+            task.taskDialog.close()
+        }
         else board.app.removeBoard(board.id)
 
         this.close()

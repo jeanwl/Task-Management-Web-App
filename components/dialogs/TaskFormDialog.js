@@ -8,10 +8,11 @@ export class TaskFormDialog extends Dialog {
         'e.g. Make coffee',
         'e.g. Drink coffee & smile'
     ]
+    descriptionPlaceholder = 'e.g. It’s always good to take a break. This 15 minute break will recharge the batteries a little.'
 
     showNew(board) {
-        this.isEdit = false
         this.board = board
+        this.isEdit = false
 
         this.buildColumnsOptions(board)
 
@@ -20,8 +21,26 @@ export class TaskFormDialog extends Dialog {
         this.show()
     }
 
-    showEdit() {
+    showEdit(task) {
+        this.task = task
+        this.isEdit = true
 
+        const board = this.board = task.column.board
+
+        this.buildColumnsOptions(board)
+
+        const idsMap = this.idsMap = {}
+        const subtasks = task.getSubtasks().map(subtask => {
+            const newSubtask = this.newSubtask(subtask.getTitle())
+            
+            idsMap[newSubtask.id] = subtask.id
+
+            return newSubtask
+        })
+
+        this.subtasks = reactive(subtasks)
+
+        this.show()
     }
 
     buildColumnsOptions(board) {
@@ -51,22 +70,23 @@ export class TaskFormDialog extends Dialog {
         const subtasksTitles = formData.getAll('subtask')
 
         if (this.isEdit) {
-            const { idsMap } = this
-            const subtasks = this.data.subtasks.map(({id}, i) => {
+            const { task, idsMap } = this
+            const subtasks = this.subtasks.map(({id}, i) => {
                 const isNew = !(id in idsMap)
                 
                 return {
                     id: isNew ? id : idsMap[id],
-                    name: subtasksNames[i],
+                    title: subtasksTitles[i],
                     isNew
                 }
             })
 
-            if (columnId != this.task.column.id) {
-                this.board.moveTask()
-            }
+            task.edit({ title, description, subtasks })
 
-            return this.task.edit({ title, description, subtasks })
+            const taskColumnId = task.column.id
+            if (columnId == taskColumnId) return
+
+            return this.board.moveTask({ task, to: columnId})
         }
 
         this.board.columns[columnId].addTask({
@@ -87,13 +107,13 @@ export class TaskFormDialog extends Dialog {
 
             <label for="title">Title</label>
             <input type="text" name="title" required
-                value="${isEdit ? task.getName() : ''}"
+                value="${isEdit ? task.getTitle() : ''}"
                 placeholder="e.g. Take coffee break">
 
             <label for="description">Title</label>
-            <textarea name="description" required
-                placeholder="e.g. It’s always good to take a break. This 15 minute break will 
-                recharge the batteries a little.">${isEdit ? task.getDescription() : ''}</textarea>
+            <textarea name="description"
+                placeholder="${isEdit ? '': this.descriptionPlaceholder}"
+                >${isEdit ? task.getDescription() : ''}</textarea>
 
             <fieldset>
                 <label for="subtask">Subtasks</label>
@@ -117,14 +137,14 @@ export class TaskFormDialog extends Dialog {
     }
 
     renderSubtasks() {
-        const { subtasks } = this
+        const { subtasks, isEdit } = this
 
         return subtasks.map(({title, id}, i) => {
             return html`
         
             <li>
                 <input type="text" name="subtask" value="${title}" required
-                    placeholder="${() => this.subtasksPlaceholders[i] ?? ''}">
+                    placeholder="${() => (!isEdit && this.subtasksPlaceholders[i]) ?? ''}">
                 
                 <button type="button" @click="${() => subtasks.splice(i, 1)}">
                     <span class="visually-hidden">Remove Subtask</span>
@@ -150,9 +170,13 @@ export class TaskFormDialog extends Dialog {
 
     renderColumnsOptions() {
         return this.columnsOptions.map(({ id, name }) => {
+            const isSelected = () => this.isEdit && this.task.column.id == id
+            
             return html`
             
-            <option value="${id}">${name}</option>
+            <option value="${id}" selected="${isSelected}">
+                ${name}
+            </option>
 
             `
         })

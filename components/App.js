@@ -18,8 +18,7 @@ export class App {
     confirmDialog = new ConfirmDialog()
 
     data = reactive({
-        boardsIds: [],
-        isDark: matchMedia('(prefers-color-scheme: dark)').matches
+        boardsIds: []
     })
     
     constructor() {
@@ -52,8 +51,7 @@ export class App {
         
         data.currentBoard = currentBoard
         data.hideSidebar = hideSidebar
-        
-        if (isDark != null) data.isDark = isDark
+        data.isDark = isDark ?? matchMedia('(prefers-color-scheme: dark)').matches
     }
 
     save() {
