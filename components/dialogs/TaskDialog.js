@@ -1,5 +1,5 @@
 import { Dialog } from './Dialog.js'
-import { reactive, html } from '/js/arrow.js'
+import { reactive, html } from '../../js/arrow.js'
 
 export class TaskDialog extends Dialog {
     id = 'taskDialog'

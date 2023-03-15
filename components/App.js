@@ -3,8 +3,8 @@ import { BoardFormDialog } from './dialogs/BoardFormDialog.js'
 import { TaskDialog } from './dialogs/TaskDialog.js'
 import { TaskFormDialog } from './dialogs/TaskFormDialog.js'
 import { ConfirmDialog } from './dialogs/ConfirmDialog.js'
-import { loadDataSample } from '/js/loadDataSample.js'
-import { reactive, html } from '/js/arrow.js'
+import { loadDataSample } from '../js/loadDataSample.js'
+import { reactive, html } from '../js/arrow.js'
 
 export class App {
     boards = {}

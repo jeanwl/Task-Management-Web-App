@@ -1,6 +1,6 @@
 import { Dialog } from './Dialog.js'
-import { reactive, html } from '/js/arrow.js'
-import { generateId } from '/js/helpers.js'
+import { reactive, html } from '../../js/arrow.js'
+import { generateId } from '../../js/helpers.js'
 
 export class BoardFormDialog extends Dialog {
     id = 'boardFormDialog'

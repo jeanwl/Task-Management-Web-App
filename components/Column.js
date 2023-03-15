@@ -1,5 +1,5 @@
 import { Task } from './Task.js'
-import { reactive, html } from '/js/arrow.js'
+import { reactive, html } from '../js/arrow.js'
 
 export class Column {
     tasks = {}
