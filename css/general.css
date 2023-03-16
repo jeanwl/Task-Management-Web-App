@@ -1,4 +1,4 @@
-body, h1, h2, h3, h4, p, ul, menu, li {
+body, h1, h2, h3, h4, h5, p, ul, menu, li {
     all: unset;
     display: block;
 }
@@ -18,6 +18,9 @@ button {
 
 dialog {
     padding: unset;
+    border: unset;
+    background: unset;
+    overflow: visible;
 }
 
 html {
@@ -56,4 +59,32 @@ body {
     clip: rect(0, 0, 0, 0);
     white-space: nowrap;
     border: 0;
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+@keyframes scale {
+    from {
+        scale: 0.95;
+    }
+
+    to {
+        scale: 1;
+    }
+}
+@keyframes slide-down {
+    from {
+        translate: 0 -5px;
+    }
+
+    to {
+        translate: 0;
+    }
 }

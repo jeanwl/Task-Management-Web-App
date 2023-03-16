@@ -24,11 +24,13 @@ export class Dialog {
     render() {
         return this.data.show ? html`
         
-        <dialog id="${this.id}"
+        <dialog id="${this.id}" class="dialog"
             @click="${() => this.close()}"
             @close="${() => this.onClose()}">
             
-            <div @click="${e => e.stopPropagation()}">
+            <div class="dialog__content"
+                @click="${e => e.stopPropagation()}">
+                
                 ${this.renderContent()}
             </div>
         </dialog>

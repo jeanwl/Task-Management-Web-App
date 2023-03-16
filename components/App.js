@@ -138,7 +138,9 @@ export class App {
                 ${() => `All boards (${data.boardsIds.length})`}
             </h2>
 
-            <menu class="sidebar__boards">${() => this.renderBoardList()}</menu>
+            <menu class="sidebar__boards">
+                ${() => this.renderBoardList()}
+            </menu>
             
             ${() => this.renderNewBoardBtn()}
 

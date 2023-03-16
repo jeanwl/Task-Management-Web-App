@@ -99,22 +99,16 @@ export class Column {
 
         return html`
         
-        <h3 class="column__name | title title--s">
-            ${() => `${data.name} (${data.tasksIds.length})`}
-        </h3>
+        <li class="column">
+            <h3 class="column__name | title title--s">
+                ${() => `${data.name} (${data.tasksIds.length})`}
+            </h3>
 
-        <ul class="tasks">${() => this.renderTasks()}</ul>
+            <ul class="tasks">
+                ${() => this.getTasks().map(task => task.render())}
+            </ul>
+        </li>
         
         `
-    }
-
-    renderTasks() {
-        return this.getTasks().map(task => {
-            return html`
-            
-            ${() => task.render()}
-
-            `
-        })
     }
 }
