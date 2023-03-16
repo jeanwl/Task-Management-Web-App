@@ -61,14 +61,14 @@ export class Column {
 
     removeTask({ id, removeSave }) {
         const { tasksIds } = this.data
-
-        tasksIds.splice(tasksIds.indexOf(id), 1)
         
         const { tasks } = this
 
         if (removeSave) tasks[id].removeSave()
 
         delete tasks[id]
+
+        tasksIds.splice(tasksIds.indexOf(id), 1)
     }
 
     insertTask(task) {
@@ -108,7 +108,7 @@ export class Column {
         return this.data.tasksIds.map(id => {
             return html`
             
-            ${() => tasks[id].render()}
+            ${tasks[id].render()}
 
             `
         })

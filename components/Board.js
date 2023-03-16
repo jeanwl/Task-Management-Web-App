@@ -88,7 +88,7 @@ export class Board {
 
     moveTask({ task, to }) {
         task.column.removeTask({ id: task.id })
-
+        
         this.columns[to].insertTask(task)
     }
 

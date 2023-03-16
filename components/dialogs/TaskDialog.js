@@ -3,7 +3,9 @@ import { reactive, html } from '../../js/arrow.js'
 
 export class TaskDialog extends Dialog {
     id = 'taskDialog'
+    selectId = 'taskDialogSelect'
     columnsOptions = []
+    columnIdChangeHandler = this.onColumnIdChange.bind(this)
 
     data = reactive({
         subtasks: []
@@ -15,6 +17,8 @@ export class TaskDialog extends Dialog {
         this.buildColumnsOptions(task.column.board)
         
         super.show()
+
+        this.task.data.$on('columnId', this.columnIdChangeHandler)
     }
 
     buildColumnsOptions(board) {
@@ -29,6 +33,16 @@ export class TaskDialog extends Dialog {
         const columnId = e.target.value
 
         this.task.column.board.moveTask({ task: this.task, to: columnId})
+    }
+
+    onColumnIdChange(id) {
+        window[this.selectId].value = id
+    }
+
+    onClose() {
+        this.task.data.$off('columnId', this.columnIdChangeHandler)
+
+        super.onClose()
     }
 
     renderContent() {
@@ -59,7 +73,7 @@ export class TaskDialog extends Dialog {
         <div class="task-dialog__top">
             <h4>${() => task.getTitle()}</h4>
             
-            <button class="dropdown-btn" id="dropdownTaskDialogMenuBtn"
+            <button class="dropdown-toggle" id="dropdownTaskDialogMenuBtn"
                 aria-haspopup="true"
                 aria-expanded="${() => data.menuIsOpen}"
                 @click="${() => data.menuIsOpen = !data.menuIsOpen}">
@@ -74,7 +88,7 @@ export class TaskDialog extends Dialog {
 
         ${() => this.renderSubtasks()}
 
-        ${() => this.renderColumnSelect()}
+        ${this.renderColumnSelect()}
         `
     }
 
@@ -86,7 +100,7 @@ export class TaskDialog extends Dialog {
 
         return html`
         
-        <h5>Subtasks (${() => task.getNCompleted()} of ${nSubtasks})</h5>
+        <h5>${() => `Subtasks (${task.getNCompleted()} of ${nSubtasks})`}</h5>
         
         ${() => this.renderSubtasksList()}
         
@@ -98,7 +112,7 @@ export class TaskDialog extends Dialog {
             return html`
         
             <div class="subtask">
-                ${() => subtask.render()}
+                ${subtask.render()}
             </div>
 
             `
@@ -111,10 +125,10 @@ export class TaskDialog extends Dialog {
         return html`
         
         <label for="column">Column</label>
-        <select name="column"
+        <select name="column" id="${this.selectId}"
             @change="${(e) => this.onColumnChange(e)}">
             
-            ${() => this.renderColumnsOptions()}
+            ${this.renderColumnsOptions()}
         </select>
         
         `
@@ -122,11 +136,9 @@ export class TaskDialog extends Dialog {
 
     renderColumnsOptions() {
         return this.columnsOptions.map(({ id, name }) => {
-            const isSelected = () => this.task.data.columnId == id
-            
             return html`
             
-            <option value="${id}" selected="${isSelected}">
+            <option value="${id}" selected="${() => id == this.task.column.id}">
                 ${name}
             </option>
 

@@ -12,8 +12,6 @@ export class Task {
 
     constructor({ column, id, title, description, subtasksTitles, wasSaved }) {
         this.column = column
-        this.data.columnId = column.id
-        this.data.$on('columnId', () => console.log('columnId changed'))
         this.id = id
         this.storageKey = `task_${id}`
         this.taskDialog = column.board.app.taskDialog
@@ -21,6 +19,8 @@ export class Task {
         if (wasSaved) this.load()
 
         const { data } = this
+
+        data.columnId = column.id
 
         for (const key of this.keysToSave) {
             data.$on(key, () => this.save())
@@ -96,7 +96,6 @@ export class Task {
     }
 
     moveSubtask({ subtask, to }) {
-        return
         const { subtasksIds } = this.data
         const id = subtask.id
 
@@ -112,14 +111,13 @@ export class Task {
         data.description = description
         
         editedSubtasks.forEach(({ id, title, isNew }, i) => {
-            const subtask = subtasks[id]
-            
             if (isNew) {
                 this.addSubtask({ id, title })
                 
-                return this.moveSubtask({ subtask, to: i})
+                return this.moveSubtask({ subtask: subtasks[id], to: i})
             }
-
+            
+            const subtask = subtasks[id]
             subtask.setTitle(title)
 
             if (subtasksIds.indexOf(id) == i) return

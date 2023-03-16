@@ -163,9 +163,8 @@ export class App {
 
     renderBoard() {
         const { data } = this
-        const { boardsIds } = data
 
-        if (boardsIds.length == 0) return ''
+        if (data.boardsIds.length == 0) return ''
 
         return this.boards[data.currentBoard].render()
     }
