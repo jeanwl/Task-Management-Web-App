@@ -35,6 +35,12 @@ export class Column {
         this.data.name = name
     }
 
+    getTasks() {
+        const { tasks } = this
+        
+        return this.data.tasksIds.map(id => tasks[id])
+    }
+
     load() {
         const savedData = localStorage.getItem(this.storageKey)
         
@@ -103,12 +109,10 @@ export class Column {
     }
 
     renderTasks() {
-        const { tasks } = this
-
-        return this.data.tasksIds.map(id => {
+        return this.getTasks().map(task => {
             return html`
             
-            ${tasks[id].render()}
+            ${() => task.render()}
 
             `
         })
