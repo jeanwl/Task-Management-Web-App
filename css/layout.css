@@ -262,6 +262,41 @@
     text-decoration: line-through;
 }
 
+.dialog, .dialog::backdrop {
+    animation: fade-in .2s forwards;
+}
+
+.dialog__content {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    width: 480px;
+    padding: 32px;
+    border-radius: 6px;
+    background-color: white;
+
+    animation: scale .2s forwards;
+    will-change: scale;
+}
+
+.task-dialog__top {
+    display: flex;
+}
+
+.subtasks__title {
+    color: var(--gray);
+}
+
+.dialog__content .dropdown {
+    position: absolute;
+    top: 32px;
+    right: 32px;
+}
+
+.dialog__content .dropdown__menu {
+    right: -72px;
+}
+
 form {
     display: flex;
     flex-direction: column;

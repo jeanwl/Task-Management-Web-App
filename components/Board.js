@@ -1,4 +1,5 @@
 import { Column } from './Column.js'
+import { Dropdown } from './Dropdown.js'
 import { reactive, html } from '../js/arrow.js'
 import { generateId } from '../js/helpers.js'
 
@@ -135,55 +136,38 @@ export class Board {
     render() {
         const { data, app } = this
 
-        const dropdownMenu = () => data.menuIsOpen ? html`
-        
-        <menu class="dropdown-menu"
-            aria-labelledby="dropdownBoardMenuBtn">
-            
-            <li>
-                <button @click="${() => app.boardFormDialog.showEdit(this)}">
-                    Edit Board
-                </button>
-                <button @click="${() => app.confirmDialog.showBoard(this)}">
-                    Delete Board
-                </button>
-            </li>
-        </menu>
-
-        ` : ''
+        const dropdown = new Dropdown([
+            {
+                text: 'Edit Board',
+                action: () => app.boardFormDialog.showEdit(this)
+            },
+            {
+                text: 'Delete Board',
+                style: 'danger',
+                action: () => app.confirmDialog.showBoard(this)
+            }
+        ])
 
         return html`
         
         <header class="board__header">
-            <h2 class="title title--xl">${() => data.name}</h2>
+            <h2 class="title title--xl">
+                ${() => data.name}
+            </h2>
+            
             <button class="new-task-btn | btn btn--large btn--primary"
                 @click="${() => app.taskFormDialog.showNew(this)}">
                 
                 Add New Task
             </button>
-            <button class="dropdown-toggle" id="dropdownBoardMenuBtn"
-                aria-haspopup="true"
-                aria-expanded="${() => data.menuIsOpen}"
-                @click="${() => data.menuIsOpen = !data.menuIsOpen}">
-                
-                <span class="visually-hidden">Show menu</span>
-            </button>
-
-            ${dropdownMenu}
+            
+            ${dropdown.render()}
         </header>
 
-        <ul class="board__content">${() => this.renderColumns()}</ul>
+        <ul class="board__content">
+            ${() => this.getColumns().map(column => column.render())}
+        </ul>
 
         `
-    }
-
-    renderColumns() {
-        return this.getColumns().map(column => {
-            return html`
-            
-            <li class="column">${() => column.render()}</li>
-
-            `
-        })
     }
 }

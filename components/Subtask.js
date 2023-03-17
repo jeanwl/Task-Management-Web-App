@@ -70,11 +70,13 @@ export class Subtask {
 
         return html`
         
-        <input type="checkbox" id="${this.id}"
-            checked="${() => data.isCompleted}"
-            @change="${() => data.isCompleted = !data.isCompleted}">
-        
-        <label for="${this.id}">${data.title}</label>
+        <li class="subtask">
+            <input type="checkbox" id="${this.id}"
+                checked="${() => data.isCompleted}"
+                @change="${() => data.isCompleted = !data.isCompleted}">
+            
+            <label for="${this.id}">${data.title}</label>
+        </li>
 
         `
     }
