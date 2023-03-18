@@ -24,6 +24,18 @@ export class Board {
             data.$on(key, () => this.save())
         }
 
+        this.dropdown = new Dropdown([
+            {
+                text: 'Edit Board',
+                action: () => app.boardFormDialog.showEdit(this)
+            },
+            {
+                text: 'Delete Board',
+                style: 'danger',
+                action: () => app.confirmDialog.showBoard(this)
+            }
+        ])
+
         if (wasSaved) return
 
         data.name = name
@@ -134,34 +146,20 @@ export class Board {
     }
 
     render() {
-        const { data, app } = this
-
-        const dropdown = new Dropdown([
-            {
-                text: 'Edit Board',
-                action: () => app.boardFormDialog.showEdit(this)
-            },
-            {
-                text: 'Delete Board',
-                style: 'danger',
-                action: () => app.confirmDialog.showBoard(this)
-            }
-        ])
-
         return html`
         
         <header class="board__header">
             <h2 class="title title--xl">
-                ${() => data.name}
+                ${() => this.data.name}
             </h2>
             
             <button class="new-task-btn | btn btn--large btn--primary"
-                @click="${() => app.taskFormDialog.showNew(this)}">
+                @click="${() => this.app.taskFormDialog.showNew(this)}">
                 
                 Add New Task
             </button>
             
-            ${dropdown.render()}
+            ${() => this.dropdown.render()}
         </header>
 
         <ul class="board__content">
