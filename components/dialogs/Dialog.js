@@ -24,7 +24,7 @@ export class Dialog {
     render() {
         return this.data.show ? html`
         
-        <dialog id="${this.id}" class="dialog"
+        <dialog class="dialog" id="${this.id}"
             @click="${() => this.close()}"
             @close="${() => this.onClose()}">
             

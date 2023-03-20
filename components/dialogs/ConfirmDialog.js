@@ -1,48 +1,43 @@
 import { Dialog } from './Dialog.js'
 import { html } from '../../js/arrow.js'
+import { generateId } from '../../js/helpers.js'
 
 export class ConfirmDialog extends Dialog {
-    id = 'confirmDialog'
+    id = generateId()
 
-    showBoard(board) {
+    constructor({ board, task }) {
+        super()
+        
         this.board = board
-        this.isTask = false
-
-        this.show()
-    }
-
-    showTask(task) {
         this.task = task
-        this.isTask = true
+        this.isTask = board == null
 
-        this.show()
+        this.title = this.isTask ? 'Delete this Task?' : 'Delete this Board?'
     }
 
-    getText() {
-        return `Are you sure you want to delete the ${this.isTask
-            ? `‘${this.task.getTitle()}’ task and its subtasks? This action`
-            : `‘${this.board.getName()}’ board? This action will remove all columns and tasks and`
-        } cannot be reversed.`
+    show() {
+        this.text = this.isTask
+            ? `Are you sure you want to delete the ‘${this.task.getTitle()}’ task and its subtasks? This action cannot be reversed.`
+            : `Are you sure you want to delete the ‘${this.board.getName()}’ board? This action will remove all columns and tasks and cannot be reversed.`
+        
+        super.show()
     }
 
     confirm() {
-        const { isTask, task, board } = this
+        const { task, board } = this
 
-        if (isTask) {
-            this.task.column.removeTask({ id: task.id, removeSave: true })
-            task.taskDialog.close()
+        if (this.isTask) {
+            task.column.removeTask({ id: task.id, removeSave: true })
         }
         else board.app.removeBoard(board.id)
-
-        this.close()
     }
 
     renderContent() {
         return html`
         
-        <h2>Delete this ${this.isTask ? 'Task' : 'Board'}?</h2>
+        <h2>${this.title}</h2>
 
-        <p>${this.getText()}</p>
+        <p>${this.text}</p>
 
         <menu>
             <li>

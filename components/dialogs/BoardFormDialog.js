@@ -3,44 +3,58 @@ import { reactive, html } from '../../js/arrow.js'
 import { generateId } from '../../js/helpers.js'
 
 export class BoardFormDialog extends Dialog {
-    id = 'boardFormDialog'
+    id = generateId()
     defaultColumns = ['Todo', 'Doing']
 
-    showNew(app) {
+    constructor({ app, board }) {
+        super()
+        
         this.app = app
-        this.isEdit = false
-
-        const columns = this.defaultColumns.map(name => (
-            this.newColumn(name)
-        ))
-
-        this.columns = reactive(columns)
-
-        this.show()
-    }
-
-    showEdit(board) {
         this.board = board
-        this.isEdit = true
+        this.isEdit = app == null
 
-        const idsMap = this.idsMap = {}
-        const columns = this.board.getColumns().map(column => {
-            const newColumn = this.newColumn(column.getName())
-            
-            idsMap[newColumn.id] = column.id
-
-            return newColumn
-        })
-
-        this.columns = reactive(columns)
-
-        this.show()
+        if (this.isEdit) {
+            this.title = 'Edit Board'
+            this.btnText = 'Save Changes'
+        }
+        else {
+            this.title = 'Add New Board'
+            this.name = ''
+            this.btnText = 'Create New Board'
+        }
     }
 
-    newColumn(name) {
+    show() {
+        let columns
+
+        if (this.isEdit) {
+            const { board } = this
+
+            this.name = board.getName()
+            
+            columns = board.getColumns().map(column => (
+                this.newColumn({
+                    id: column.id,
+                    name: column.getName()
+                })
+            ))
+        }
+        else {
+            columns = this.defaultColumns.map(name => (
+                this.newColumn({ name })
+            ))
+        }
+        
+        this.columns = reactive(columns)
+
+        super.show()
+    }
+
+    newColumn({ id, name } = {}) {
         return {
+            id: id ?? generateId(),
             name: name ?? '',
-            id: generateId()
+            isNew: id == null
         }
     }
 
@@ -53,40 +67,27 @@ export class BoardFormDialog extends Dialog {
         const name = formData.get('name')
         const columnsNames = formData.getAll('column')
 
-        if (this.isEdit) {
-            const { idsMap } = this
-            const columns = this.columns.map(({id}, i) => {
-                const isNew = !(id in idsMap)
-                
-                return {
-                    id: isNew ? id : idsMap[id],
-                    name: columnsNames[i],
-                    isNew
-                }
-            })
+        const columns = this.columns.map((column, i) => {
+            column.name = columnsNames[i]
 
-            return this.board.edit({ name, columns })
-        }
-        
-        this.app.addBoard({
-            id: generateId(),
-            name,
-            columnsNames
+            return column
         })
+
+        if (this.isEdit) this.board.edit({ name, columns })
+        else this.app.addBoard({ id: generateId(), name, columns, isNew: true })
     }
 
     renderContent() {
-        const { isEdit } = this
-
         return html`
         
         <form method="dialog" @submit="${(e) => this.onSubmit(e)}">
-            
-            <h2>${isEdit ? 'Edit' : 'Add New'} Board</h2>
+            <h2 class="">
+                ${this.title}
+            </h2>
 
             <label for="name">Board Name</label>
             <input type="text" name="name"
-                value="${isEdit ? this.board.getName() : ''}"
+                value="${this.name}"
                 placeholder="e.g. Web Design" required>
 
             <fieldset>
@@ -101,7 +102,7 @@ export class BoardFormDialog extends Dialog {
             </fieldset>
             
             <button type="submit">
-                ${isEdit ? 'Save Changes' : 'Create New Board'}
+                ${this.btnText}
             </button>
         </form>
         

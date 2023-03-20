@@ -1,8 +1,5 @@
 import { Board } from './Board.js'
 import { BoardFormDialog } from './dialogs/BoardFormDialog.js'
-import { TaskDialog } from './dialogs/TaskDialog.js'
-import { TaskFormDialog } from './dialogs/TaskFormDialog.js'
-import { ConfirmDialog } from './dialogs/ConfirmDialog.js'
 import { loadDataSample } from '../js/loadDataSample.js'
 import { reactive, html } from '../js/arrow.js'
 
@@ -12,10 +9,7 @@ export class App {
     storageKey = 'app'
     keysToSave = ['boardsIds', 'currentBoard', 'hideSidebar', 'isDark']
     
-    boardFormDialog = new BoardFormDialog()
-    taskDialog = new TaskDialog()
-    taskFormDialog = new TaskFormDialog()
-    confirmDialog = new ConfirmDialog()
+    boardFormDialog = new BoardFormDialog({ app: this })
 
     data = reactive({
         boardsIds: []
@@ -47,7 +41,9 @@ export class App {
         const { boardsIds, currentBoard, hideSidebar, isDark } = JSON.parse(savedData)
         const { data } = this
 
-        for (const id of boardsIds) this.addBoard({ id, wasSaved: true })
+        for (const id of boardsIds) {
+            this.addBoard({ id })
+        }
         
         data.currentBoard = currentBoard
         data.hideSidebar = hideSidebar
@@ -62,27 +58,31 @@ export class App {
         localStorage.setItem(this.storageKey, JSON.stringify(save))
     }
 
-    addBoard({ id, name, columnsNames, wasSaved }) {
-        this.boards[id] = new Board({ app: this, id, name, columnsNames, wasSaved })
-        
+    addBoard({ id, name, columns, isNew }) {
         const { data } = this
+        const board = new Board({ id, name, isNew, app: this })
 
-        if (!wasSaved) data.currentBoard = id
-        
+        if (columns) {
+            for (const column of columns) {
+                board.addColumn(column)
+            }
+        }
+
+        this.boards[id] = board
         data.boardsIds.push(id)
+
+        if (isNew) data.currentBoard = id
     }
 
     removeBoard(id) {
-        const { boardsIds } = this.data
-
-        boardsIds.splice(boardsIds.indexOf(id), 1)
-
-        this.data.currentBoard = boardsIds[0]
-        
         const { boards } = this
+        const { boardsIds } = this.data
+        const index = boardsIds.indexOf(id)
+        
+        this.data.currentBoard = boardsIds[index == 0 ? 1 : index - 1]
 
+        boardsIds.splice(index, 1)
         boards[id].removeSave()
-
         delete boards[id]
     }
 
@@ -112,15 +112,10 @@ export class App {
                 ${() => this.renderSidebar()}
                 ${showSidebarBtn}
                 
-                <section class="board">
-                    ${() => this.renderBoard()}
-                </section>
+                ${() => this.renderBoard()}
             </main>
 
             ${() => this.boardFormDialog.render()}
-            ${() => this.taskDialog.render()}
-            ${() => this.taskFormDialog.render()}
-            ${() => this.confirmDialog.render()}
         </div>
 
         `
@@ -196,7 +191,7 @@ export class App {
         return html`
         
         <button class="sidebar__new-board-btn | title title--m"
-            @click="${() => this.boardFormDialog.showNew(this)}">
+            @click="${() => this.boardFormDialog.show()}">
             
             <svg class="board-icon"><use href="#board-icon"></svg>
             + Create New Board

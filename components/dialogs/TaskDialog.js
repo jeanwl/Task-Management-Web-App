@@ -1,60 +1,63 @@
 import { Dialog } from './Dialog.js'
+import { TaskFormDialog } from './TaskFormDialog.js'
+import { ConfirmDialog } from './ConfirmDialog.js'
 import { Dropdown } from '../Dropdown.js'
 import { html } from '../../js/arrow.js'
+import { generateId } from '../../js/helpers.js'
 
 export class TaskDialog extends Dialog {
-    id = 'taskDialog'
-    selectId = 'taskDialogSelect'
-    columnsOptions = []
-    columnIdChangeHandler = id => this.onColumnIdChange(id)
+    id = generateId()
+    selectId = generateId()
 
-    show(task) {
+    constructor(task) {
+        super()
+
         this.task = task
-
-        this.buildColumnsOptions(task.column.board)
-
-        const app = task.column.board.app
+        this.taskFormDialog = new TaskFormDialog({ task })
+        this.confirmDialog = new ConfirmDialog({ task })
 
         this.dropdown = new Dropdown([
             {
                 text: 'Edit Task',
-                action: () => app.taskFormDialog.showEdit(task)
+                action: () => this.taskFormDialog.show()
             },
             {
                 text: 'Delete Task',
                 style: 'danger',
-                action: () => app.confirmDialog.showTask(task)
+                action: () => this.confirmDialog.show()
             }
         ])
-        
-        super.show()
-
-        this.task.data.$on('columnId', this.columnIdChangeHandler)
     }
 
-    buildColumnsOptions(board) {
-        const columnsOptions = board.getColumns().map(column => (
-            { name: column.getName(), id: column.id }
+    get selectEl() {
+        return window[this.selectId]
+    }
+
+    show() {
+        const { task } = this
+        const { id } = this.columnId = task.column
+
+        this.columnsOptions = task.column.board.getColumns().map(column => (
+            {
+                id: column.id,
+                name: column.getName(),
+                current: column.id == id
+            }
         ))
 
-        this.columnsOptions = columnsOptions
-    }
-
-    onColumnChange(e) {
-        const columnId = e.target.value
-
-        this.task.column.board.moveTask({ task: this.task, to: columnId})
-    }
-
-    onColumnIdChange(id) {
-        window[this.selectId].value = id
+        super.show()
     }
 
     onClose() {
-        this.dropdown.dispose()
-        this.task.data.$off('columnId', this.columnIdChangeHandler)
-
         super.onClose()
+        
+        const selectId = this.selectEl.value
+
+        if (this.columnId != selectId) {
+            const { task } = this
+
+            task.column.board.moveTask({ task, to: selectId })
+        }
     }
 
     renderContent() {
@@ -71,6 +74,9 @@ export class TaskDialog extends Dialog {
         ${this.renderColumnSelect()}
 
         ${this.dropdown.render()}
+
+        ${() => this.taskFormDialog.render()}
+        ${() => this.confirmDialog.render()}
         `
     }
 
@@ -112,9 +118,7 @@ export class TaskDialog extends Dialog {
         
         <div class="task-column">
             <label for="column">Column</label>
-            <select name="column" id="${this.selectId}"
-                @change="${(e) => this.onColumnChange(e)}">
-                
+            <select name="column" id="${this.selectId}">
                 ${this.renderColumnsOptions()}
             </select>
         </div>
@@ -123,12 +127,10 @@ export class TaskDialog extends Dialog {
     }
 
     renderColumnsOptions() {
-        return this.columnsOptions.map(({ id, name }) => {
+        return this.columnsOptions.map(({ id, name, current }) => {
             return html`
             
-            <option value="${id}"
-                selected="${() => id == this.task.column.id}">
-                
+            <option value="${id}" selected="${() => current}">
                 ${name}
             </option>
 

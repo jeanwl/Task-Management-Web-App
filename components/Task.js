@@ -1,39 +1,35 @@
 import { Subtask } from './Subtask.js'
+import { TaskDialog } from './dialogs/TaskDialog.js'
 import { reactive, html } from '../js/arrow.js'
-import { generateId } from '../js/helpers.js'
 
 export class Task {
     subtasks = {}
     keysToSave = ['title', 'description', 'subtasksIds']
 
+    taskDialog = new TaskDialog(this)
+
     data = reactive({
-        subtasksIds: []
+        subtasksIds: [],
+        description: ''
     })
 
-    constructor({ column, id, title, description, subtasksTitles, wasSaved }) {
+    constructor({ id, title, description, isNew, column }) {
         this.column = column
         this.id = id
         this.storageKey = `task_${id}`
-        this.taskDialog = column.board.app.taskDialog
 
-        if (wasSaved) this.load()
+        if (!isNew) this.load()
 
         const { data } = this
-
-        data.columnId = column.id
 
         for (const key of this.keysToSave) {
             data.$on(key, () => this.save())
         }
 
-        if (wasSaved) return
+        if (!isNew) return
 
         data.title = title
         data.description = description
-
-        for (const title of subtasksTitles) {
-            this.addSubtask({ id: generateId(), title })
-        }
     }
 
     getTitle() {
@@ -61,7 +57,7 @@ export class Task {
         
         const { title, description, subtasksIds } = JSON.parse(savedData)
         
-        for (const id of subtasksIds) this.addSubtask({ id, wasSaved: true })
+        for (const id of subtasksIds) this.addSubtask({ id })
 
         const { data } = this
         
@@ -77,21 +73,19 @@ export class Task {
         localStorage.setItem(this.storageKey, JSON.stringify(save))
     }
 
-    addSubtask({ id, title, wasSaved }) {
-        this.subtasks[id] = new Subtask({ task: this, id, title, wasSaved })
+    addSubtask({ id, title, isNew }) {
+        const subtask = new Subtask({ id, title, isNew, task: this })
         
+        this.subtasks[id] = subtask
         this.data.subtasksIds.push(id)
     }
 
     removeSubtask(id) {
+        const { subtasks } = this
         const { subtasksIds } = this.data
 
         subtasksIds.splice(subtasksIds.indexOf(id), 1)
-        
-        const { subtasks } = this
-
         subtasks[id].removeSave()
-
         delete subtasks[id]
     }
 
@@ -112,9 +106,10 @@ export class Task {
         
         editedSubtasks.forEach(({ id, title, isNew }, i) => {
             if (isNew) {
-                this.addSubtask({ id, title })
+                this.addSubtask({ id, title, isNew })
+                this.moveSubtask({ subtask: subtasks[id], to: i })
                 
-                return this.moveSubtask({ subtask: subtasks[id], to: i})
+                return
             }
             
             const subtask = subtasks[id]
@@ -157,6 +152,8 @@ export class Task {
             <p class="task__completed | text text--m">
                 ${() => `${this.getNCompleted()} of ${subtasksIds.length} subtasks`}
             </p>
+
+            ${() => this.taskDialog.render()}
         </li>
 
         `

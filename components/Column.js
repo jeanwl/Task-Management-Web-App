@@ -9,12 +9,12 @@ export class Column {
         tasksIds: []
     })
 
-    constructor({ board, id, name, wasSaved }) {
+    constructor({ id, name, isNew, board }) {
         this.board = board
         this.id = id
         this.storageKey = `column_${id}`
 
-        if (wasSaved) this.load()
+        if (!isNew) this.load()
 
         const { data } = this
 
@@ -22,9 +22,7 @@ export class Column {
             data.$on(key, () => this.save())
         }
 
-        if (wasSaved) return
-
-        data.name = name
+        if (isNew) data.name = name
     }
 
     getName() {
@@ -46,7 +44,7 @@ export class Column {
         
         const { name, tasksIds } = JSON.parse(savedData)
         
-        for (const id of tasksIds) this.addTask({ id, wasSaved: true })
+        for (const id of tasksIds) this.addTask({ id })
         
         this.data.name = name
     }
@@ -59,29 +57,34 @@ export class Column {
         localStorage.setItem(this.storageKey, JSON.stringify(save))
     }
 
-    addTask({ id, title, description, subtasksTitles, wasSaved }) {
-        this.tasks[id] = new Task({ column: this, id, title, description, subtasksTitles, wasSaved })
-        
+    addTask({ id, title, description, subtasks, isNew }) {
+        const task = new Task({ id, title, description, isNew, column: this })
+
+        if (subtasks) {
+            for (const subtask of subtasks) {
+                task.addSubtask(subtask)
+            }
+        }
+
+        this.tasks[id] = task
         this.data.tasksIds.push(id)
     }
 
     removeTask({ id, removeSave }) {
-        const { tasksIds } = this.data
-        
         const { tasks } = this
-
-        if (removeSave) tasks[id].removeSave()
-
-        delete tasks[id]
+        const { tasksIds } = this.data
 
         tasksIds.splice(tasksIds.indexOf(id), 1)
+        
+        if (removeSave) tasks[id].removeSave()
+        
+        delete tasks[id]
     }
 
     insertTask(task) {
         const id = task.id
 
         task.column = this
-        task.data.columnId = this.id
         this.tasks[id] = task
         this.data.tasksIds.push(id)
     }

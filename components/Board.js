@@ -1,22 +1,40 @@
 import { Column } from './Column.js'
+import { BoardFormDialog } from './dialogs/BoardFormDialog.js'
+import { ConfirmDialog } from './dialogs/ConfirmDialog.js'
+import { TaskFormDialog } from './dialogs/TaskFormDialog.js'
 import { Dropdown } from './Dropdown.js'
 import { reactive, html } from '../js/arrow.js'
-import { generateId } from '../js/helpers.js'
 
 export class Board {
     columns = {}
     keysToSave = ['name', 'columnsIds']
 
+    boardFormDialog = new BoardFormDialog({ board: this })
+    confirmDialog = new ConfirmDialog({ board: this })
+    taskFormDialog = new TaskFormDialog({ board: this })
+
+    dropdown = new Dropdown([
+        {
+            text: 'Edit Board',
+            action: () => this.boardFormDialog.show()
+        },
+        {
+            text: 'Delete Board',
+            style: 'danger',
+            action: () => this.confirmDialog.show()
+        }
+    ])
+
     data = reactive({
         columnsIds: []
     })
 
-    constructor({ app, id, name, columnsNames, wasSaved }) {
+    constructor({ id, name, isNew, app }) {
         this.app = app
         this.id = id
         this.storageKey = `board_${id}`
 
-        if (wasSaved) this.load()
+        if (!isNew) this.load()
 
         const { data } = this
 
@@ -24,25 +42,7 @@ export class Board {
             data.$on(key, () => this.save())
         }
 
-        this.dropdown = new Dropdown([
-            {
-                text: 'Edit Board',
-                action: () => app.boardFormDialog.showEdit(this)
-            },
-            {
-                text: 'Delete Board',
-                style: 'danger',
-                action: () => app.confirmDialog.showBoard(this)
-            }
-        ])
-
-        if (wasSaved) return
-
-        data.name = name
-
-        for (const name of columnsNames) {
-            this.addColumn({ id: generateId(), name })
-        }
+        if (isNew) data.name = name
     }
 
     getName() {
@@ -60,9 +60,9 @@ export class Board {
         
         const { name, columnsIds } = JSON.parse(savedData)
         
-        for (const id of columnsIds) this.addColumn({ id, wasSaved: true })
+        for (const id of columnsIds) this.addColumn({ id })
         
-        if (name != null) this.data.name = name
+        this.data.name = name
     }
 
     save() {
@@ -73,21 +73,19 @@ export class Board {
         localStorage.setItem(this.storageKey, JSON.stringify(save))
     }
 
-    addColumn({ id, name, wasSaved }) {
-        this.columns[id] = new Column({ board: this, id, name, wasSaved })
-        
+    addColumn({ id, name, isNew }) {
+        const column = new Column({ id, name, isNew, board: this })
+
+        this.columns[id] = column
         this.data.columnsIds.push(id)
     }
 
     removeColumn(id) {
+        const { columns } = this
         const { columnsIds } = this.data
 
         columnsIds.splice(columnsIds.indexOf(id), 1)
-        
-        const { columns } = this
-
         columns[id].removeSave()
-
         delete columns[id]
     }
 
@@ -103,6 +101,8 @@ export class Board {
         task.column.removeTask({ id: task.id })
         
         this.columns[to].insertTask(task)
+
+        if (task.taskDialog.data.show) task.taskDialog.show()
     }
 
     edit({ name, columns: editedColumns }) {
@@ -113,9 +113,10 @@ export class Board {
         
         editedColumns.forEach(({ id, name, isNew }, i) => {
             if (isNew) {
-                this.addColumn({ id, name })
-                
-                return this.moveColumn({ column: columns[id], to: i})
+                this.addColumn({ id, name, isNew })
+                this.moveColumn({ column: columns[id], to: i })
+
+                return
             }
 
             const column = columns[id]
@@ -148,23 +149,29 @@ export class Board {
     render() {
         return html`
         
-        <header class="board__header">
-            <h2 class="title title--xl">
-                ${() => this.data.name}
-            </h2>
-            
-            <button class="new-task-btn | btn btn--large btn--primary"
-                @click="${() => this.app.taskFormDialog.showNew(this)}">
+        <section class="board">
+            <header class="board__header">
+                <h2 class="title title--xl">
+                    ${() => this.data.name}
+                </h2>
                 
-                Add New Task
-            </button>
-            
-            ${() => this.dropdown.render()}
-        </header>
+                <button class="new-task-btn | btn btn--large btn--primary"
+                    @click="${() => this.taskFormDialog.show()}">
+                    
+                    Add New Task
+                </button>
+                
+                ${() => this.dropdown.render()}
+            </header>
 
-        <ul class="board__content">
-            ${() => this.getColumns().map(column => column.render())}
-        </ul>
+            <ul class="board__content">
+                ${() => this.getColumns().map(column => column.render())}
+            </ul>
+
+            ${() => this.boardFormDialog.render()}
+            ${() => this.confirmDialog.render()}
+            ${() => this.taskFormDialog.render()}
+        </section>
 
         `
     }

@@ -3,14 +3,16 @@ import { reactive, html } from '../js/arrow.js'
 export class Subtask {
     keysToSave = ['title', 'isCompleted']
     
-    data = reactive({})
+    data = reactive({
+        isCompleted: false
+    })
 
-    constructor({ task, id, title, wasSaved }) {
+    constructor({ id, title, isNew, task }) {
         this.task = task
         this.id = id
         this.storageKey = `subtask_${id}`
 
-        if (wasSaved) this.load()
+        if (!isNew) this.load()
 
         const { data } = this
 
@@ -18,10 +20,7 @@ export class Subtask {
             data.$on(key, () => this.save())
         }
 
-        if (wasSaved) return
-
-        data.title = title
-        data.isCompleted = false
+        if (isNew) data.title = title
     }
 
     getTitle() {

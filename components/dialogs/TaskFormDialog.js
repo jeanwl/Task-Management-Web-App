@@ -3,58 +3,70 @@ import { reactive, html } from '../../js/arrow.js'
 import { generateId } from '../../js/helpers.js'
 
 export class TaskFormDialog extends Dialog {
-    id = 'taskFormDialog'
-    subtasksPlaceholders = [
-        'e.g. Make coffee',
-        'e.g. Drink coffee & smile'
-    ]
-    descriptionPlaceholder = 'e.g. It’s always good to take a break. This 15 minute break will recharge the batteries a little.'
+    id = generateId()
 
-    showNew(board) {
+    constructor({ board, task }) {
+        super()
+        
         this.board = board
-        this.isEdit = false
+        this.task = task
+        this.isEdit = board == null
 
-        this.buildColumnsOptions(board)
-
-        this.subtasks = reactive(Array.from({ length: 2 }, _ => this.newSubtask()))
-
-        this.show()
+        if (this.isEdit) {
+            this.title = 'Edit Task'
+            this.titlePlaceholder = this.descriptionPlaceholder = ''
+            this.btnText = 'Save Changes'
+        }
+        else {
+            this.title = 'Add New Task'
+            this.taskTitle = this.description = ''
+            this.titlePlaceholder = 'e.g. Take coffee break'
+            this.descriptionPlaceholder = 'e.g. It’s always good to take a break. This 15 minute break will recharge the batteries a little.'
+            this.subtasksPlaceholders = ['e.g. Make coffee', 'e.g. Drink coffee & smile']
+            this.btnText = 'Create New Task'
+        }
     }
 
-    showEdit(task) {
-        this.task = task
-        this.isEdit = true
+    show() {
+        let subtasks
 
-        const board = this.board = task.column.board
+        if (this.isEdit) {
+            const { task } = this
 
-        this.buildColumnsOptions(board)
-
-        const idsMap = this.idsMap = {}
-        const subtasks = task.getSubtasks().map(subtask => {
-            const newSubtask = this.newSubtask(subtask.getTitle())
+            this.taskTitle = task.getTitle()
+            this.description = task.getDescription()
             
-            idsMap[newSubtask.id] = subtask.id
+            this.buildColumnsOptions(task.column.board)
 
-            return newSubtask
-        })
+            subtasks = this.task.getSubtasks().map(subtask => (
+                this.newSubtask({
+                    id: subtask.id,
+                    title: subtask.getTitle()
+                })
+            ))
+        }
+        else {
+            this.buildColumnsOptions(this.board)
 
+            subtasks = Array.from({ length: 2 }, () => this.newSubtask())
+        }
+        
         this.subtasks = reactive(subtasks)
 
-        this.show()
+        super.show()
     }
 
     buildColumnsOptions(board) {
-        const columnsOptions = board.getColumns().map(column => (
+        this.columnsOptions = board.getColumns().map(column => (
             {name: column.getName(), id: column.id}
         ))
-
-        this.columnsOptions = reactive(columnsOptions)
     }
 
-    newSubtask(title) {
+    newSubtask({ id, title } = {}) {
         return {
+            id: id ?? generateId(),
             title: title ?? '',
-            id: generateId()
+            isNew: id == null
         }
     }
 
@@ -69,51 +81,52 @@ export class TaskFormDialog extends Dialog {
         const columnId = formData.get('column')
         const subtasksTitles = formData.getAll('subtask')
 
+        const subtasks = this.subtasks.map((subtask, i) => {
+            subtask.title = subtasksTitles[i]
+
+            return subtask
+        })
+
         if (this.isEdit) {
-            const { task, idsMap } = this
-            const subtasks = this.subtasks.map(({id}, i) => {
-                const isNew = !(id in idsMap)
-                
-                return {
-                    id: isNew ? id : idsMap[id],
-                    title: subtasksTitles[i],
-                    isNew
-                }
-            })
+            const { task } = this
 
             task.edit({ title, description, subtasks })
 
-            const taskColumnId = task.column.id
-            if (columnId == taskColumnId) return
+            if (columnId == task.column.id) return
 
-            return this.board.moveTask({ task, to: columnId})
+            task.taskDialog.selectEl.value = columnId
+
+            return
         }
 
         this.board.columns[columnId].addTask({
             id: generateId(),
             title,
             description,
-            subtasksTitles
+            subtasks,
+            isNew: true
         })
     }
 
     renderContent() {
-        const { isEdit, task, subtasks } = this
+        const { subtasks } = this
 
         return html`
         
         <form method="dialog" @submit="${(e) => this.onSubmit(e)}">
-            <h2>${() => isEdit ? 'Edit' : 'Add New'} Task</h2>
+            <h2 class="">
+                ${this.title}
+            </h2>
 
             <label for="title">Title</label>
             <input type="text" name="title" required
-                value="${isEdit ? task.getTitle() : ''}"
-                placeholder="e.g. Take coffee break">
+                value="${this.taskTitle}"
+                placeholder="${this.titlePlaceholder}">
 
-            <label for="description">Title</label>
+            <label for="description">Description</label>
             <textarea name="description"
-                placeholder="${isEdit ? '': this.descriptionPlaceholder}"
-                >${isEdit ? task.getDescription() : ''}</textarea>
+                placeholder="${this.descriptionPlaceholder}"
+                >${this.description}</textarea>
 
             <fieldset>
                 <label for="subtask">Subtasks</label>
@@ -129,7 +142,7 @@ export class TaskFormDialog extends Dialog {
             ${this.renderColumnSelect()}
             
             <button type="submit">
-                ${isEdit ? 'Save Changes' : 'Create New Task'}
+                ${this.btnText}
             </button>
         </form>
 
@@ -137,14 +150,15 @@ export class TaskFormDialog extends Dialog {
     }
 
     renderSubtasks() {
-        const { subtasks, isEdit } = this
+        const { subtasks } = this
+        const placeholders = this.isEdit ? null : this.subtasksPlaceholders
 
-        return subtasks.map(({title, id}, i) => {
+        return subtasks.map(({ title, id }, i) => {
             return html`
         
             <li>
                 <input type="text" name="subtask" value="${title}" required
-                    placeholder="${() => (!isEdit && this.subtasksPlaceholders[i]) ?? ''}">
+                    placeholder="${() => placeholders?.[i] ?? false}">
                 
                 <button type="button" @click="${() => subtasks.splice(i, 1)}">
                     <span class="visually-hidden">Remove Subtask</span>
@@ -162,19 +176,19 @@ export class TaskFormDialog extends Dialog {
         
         <label for="column">Column</label>
         <select name="column">
-            ${() => this.renderColumnsOptions()}
+            ${this.renderColumnsOptions()}
         </select>
         
         `
     }
 
     renderColumnsOptions() {
+        const columnId = this.isEdit ? this.task.column.id : null
+
         return this.columnsOptions.map(({ id, name }) => {
-            const isSelected = () => this.isEdit && this.task.column.id == id
-            
             return html`
             
-            <option value="${id}" selected="${isSelected}">
+            <option value="${id}" selected="${() => id == columnId}">
                 ${name}
             </option>
 

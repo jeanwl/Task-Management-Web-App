@@ -2,7 +2,7 @@ import { generateId } from '../js/helpers.js'
 import { reactive, html } from '../js/arrow.js'
 
 export class Dropdown {
-    openChangeHandler = isOpen => this.onOpenChange(isOpen)
+    id = generateId()
     clickHandler = e => this.onClick(e)
     keyHandler = e => this.onKey(e)
 
@@ -12,53 +12,49 @@ export class Dropdown {
 
     constructor(items) {
         this.items = items
-        this.id = generateId()
-
-        this.data.$on('isOpen', this.openChangeHandler)
     }
 
-    dispose() {
-        this.data.$off('isOpen', this.openChangeHandler)
+    toggle() {
+        if (this.data.isOpen) this.close()
+        else this.open()
     }
 
-    onOpenChange(isOpen) {
-        isOpen ? this.onOpen() : this.onClose()
-    }
+    open() {
+        this.data.isOpen = true
 
-    onOpen() {
         addEventListener('click', this.clickHandler, true)
         addEventListener('keydown', this.keyHandler, true)
     }
 
-    onClose() {
+    close() {
         removeEventListener('click', this.clickHandler, true)
         removeEventListener('keydown', this.keyHandler, true)
+
+        this.data.isOpen = false
     }
 
     onClick(e) {
         if (e.target.id == this.id) return
 
-        this.data.isOpen = false
+        this.close()
     }
 
     onKey(e) {
         if (e.key != 'Escape') return
         
-        this.data.isOpen = false
+        this.close()
         
         e.preventDefault()
     }
 
     render() {
-        const { data } = this
-
         return html`
         
         <div class="dropdown">
             <button class="dropdown__toggle" id="${this.id}"
                 aria-haspopup="true"
-                aria-expanded="${() => data.isOpen}"
-                @click="${() => data.isOpen = !data.isOpen}">
+                aria-expanded="${() => this.data.isOpen}"
+                @click="${() => this.toggle()}">
                 
                 <span class="visually-hidden">Toggle menu</span>
             </button>
@@ -92,6 +88,7 @@ export class Dropdown {
             <li class="dropdown__item${className} | text text--l">
                 <button class="dropdown__btn"
                     @click="${() => action()}">
+                    
                     ${text}
                 </button>
             </li>
