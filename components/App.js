@@ -5,7 +5,7 @@ import { reactive, html } from '../js/arrow.js'
 
 export class App {
     boards = {}
-    maxBoard = 10
+    maxBoards = 10
     storageKey = 'app'
     keysToSave = ['boardsIds', 'currentBoard', 'hideSidebar', 'isDark']
     
@@ -26,6 +26,10 @@ export class App {
         for (const key of this.keysToSave) {
             data.$on(key, () => this.save())
         }
+    }
+
+    get isFull() {
+        this.data.boardsIds.length == this.maxBoards
     }
 
     load() {
@@ -126,6 +130,17 @@ export class App {
 
         if (data.hideSidebar) return ''
 
+        const newBoardBtn = () => this.isFull ? '' : html`
+        
+        <button class="sidebar__new-board-btn | title title--m"
+            @click="${() => this.boardFormDialog.show()}">
+            
+            <svg class="board-icon"><use href="#board-icon"></svg>
+            + Create New Board
+        </button>
+        
+        `
+
         return html`
             
         <aside class="sidebar">
@@ -135,9 +150,9 @@ export class App {
 
             <menu class="sidebar__boards">
                 ${() => this.renderBoardList()}
+
+                <li>${newBoardBtn}</li>
             </menu>
-            
-            ${() => this.renderNewBoardBtn()}
 
             <button class="sidebar__theme-btn"
                 aria-pressed="${() => data.isDark}"
@@ -183,20 +198,5 @@ export class App {
 
             `
         })
-    }
-
-    renderNewBoardBtn() {
-        if (this.data.boardsIds.length == this.maxBoard) return ''
-            
-        return html`
-        
-        <button class="sidebar__new-board-btn | title title--m"
-            @click="${() => this.boardFormDialog.show()}">
-            
-            <svg class="board-icon"><use href="#board-icon"></svg>
-            + Create New Board
-        </button>
-        
-        `
     }
 }

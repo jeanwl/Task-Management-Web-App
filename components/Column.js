@@ -103,7 +103,9 @@ export class Column {
         return html`
         
         <li class="column">
-            <h3 class="column__name | title title--s">
+            <h3 class="column__name | title title--s"
+                @mousedown="${e => e.stopPropagation()}">
+                
                 ${() => `${data.name} (${data.tasksIds.length})`}
             </h3>
 

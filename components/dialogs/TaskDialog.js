@@ -35,7 +35,7 @@ export class TaskDialog extends Dialog {
 
     show() {
         const { task } = this
-        const { id } = this.columnId = task.column
+        const id = this.columnId = task.column.id
 
         this.columnsOptions = task.column.board.getColumns().map(column => (
             {

@@ -7,7 +7,11 @@ import { reactive, html } from '../js/arrow.js'
 
 export class Board {
     columns = {}
+    maxColumns = 10
     keysToSave = ['name', 'columnsIds']
+
+    mouseupHandler = e => this.onMouseup(e)
+    mousemoveHandler = e => this.onMousemove(e)
 
     boardFormDialog = new BoardFormDialog({ board: this })
     confirmDialog = new ConfirmDialog({ board: this })
@@ -43,6 +47,14 @@ export class Board {
         }
 
         if (isNew) data.name = name
+    }
+
+    get isFull() {
+        this.data.columnsIds.length == this.maxColumns
+    }
+
+    getEl() {
+        return window[this.id]
     }
 
     getName() {
@@ -101,8 +113,6 @@ export class Board {
         task.column.removeTask({ id: task.id })
         
         this.columns[to].insertTask(task)
-
-        if (task.taskDialog.data.show) task.taskDialog.show()
     }
 
     edit({ name, columns: editedColumns }) {
@@ -146,7 +156,42 @@ export class Board {
         localStorage.removeItem(this.storageKey)
     }
 
+    onMousedown(e) {
+        const el = this.el = this.getEl()
+        this.mouseX = e.clientX
+        this.mouseY = e.clientY
+        this.scrollTop = el.scrollTop
+        this.scrollLeft = el.scrollLeft
+
+        addEventListener('mousemove', this.mousemoveHandler)
+        addEventListener('mouseup', this.mouseupHandler)
+    }
+
+    onMousemove(e) {
+        const { el } = this
+        const dx = e.clientX - this.mouseX
+        const dy = e.clientY - this.mouseY
+
+        el.scrollLeft = this.scrollLeft - dx
+        el.scrollTop = this.scrollTop - dy
+    }
+
+    onMouseup(e) {
+        removeEventListener('mousemove', this.mousemoveHandler)
+        removeEventListener('mouseup', this.mouseupHandler)
+    }
+
     render() {
+        const newTaskBtn = () => this.isFull ? '' : html`
+        
+        <button class="new-task-btn | btn btn--large btn--primary"
+            @click="${() => this.taskFormDialog.show()}">
+            
+            Add New Task
+        </button>
+
+        `
+
         return html`
         
         <section class="board">
@@ -155,16 +200,14 @@ export class Board {
                     ${() => this.data.name}
                 </h2>
                 
-                <button class="new-task-btn | btn btn--large btn--primary"
-                    @click="${() => this.taskFormDialog.show()}">
-                    
-                    Add New Task
-                </button>
+                ${newTaskBtn}
                 
                 ${() => this.dropdown.render()}
             </header>
 
-            <ul class="board__content">
+            <ul class="board__content" id="${this.id}"
+                @mousedown="${e => this.onMousedown(e)}">
+                
                 ${() => this.getColumns().map(column => column.render())}
             </ul>
 

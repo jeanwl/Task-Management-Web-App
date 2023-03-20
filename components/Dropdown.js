@@ -1,5 +1,5 @@
-import { generateId } from '../js/helpers.js'
 import { reactive, html } from '../js/arrow.js'
+import { generateId } from '../js/helpers.js'
 
 export class Dropdown {
     id = generateId()

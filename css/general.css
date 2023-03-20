@@ -61,6 +61,18 @@ body {
     border: 0;
 }
 
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-thumb {
+    background-color: var(--gray);
+    border-radius: 8px;
+}
+::-webkit-scrollbar-corner {
+    background-color: inherit;
+}
+
 @keyframes fade-in {
     from {
         opacity: 0;

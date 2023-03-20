@@ -145,7 +145,9 @@ export class Task {
 
         return html`
         
-        <li class="task" @click="${() => this.taskDialog.show(this)}">
+        <li class="task" @click="${() => this.taskDialog.show(this)}"
+            @mousedown="${e => e.stopPropagation()}">
+            
             <h4 class="task__title | title title--m">
                 ${() => data.title}
             </h4>
