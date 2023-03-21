@@ -284,7 +284,7 @@
 }
 
 .dialog, .dialog::backdrop {
-    animation: fade-in .2s forwards;
+    animation: fade-in .2s;
 }
 
 .dialog__content {
@@ -296,7 +296,7 @@
     border-radius: 6px;
     background-color: white;
 
-    animation: scale .2s forwards;
+    animation: scale .2s;
     will-change: scale;
 }
 

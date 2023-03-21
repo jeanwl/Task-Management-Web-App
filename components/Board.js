@@ -10,8 +10,8 @@ export class Board {
     maxColumns = 10
     keysToSave = ['name', 'columnsIds']
 
-    mouseupHandler = e => this.onMouseup(e)
     mousemoveHandler = e => this.onMousemove(e)
+    mouseupHandler = () => this.onMouseup()
 
     boardFormDialog = new BoardFormDialog({ board: this })
     confirmDialog = new ConfirmDialog({ board: this })
@@ -36,7 +36,7 @@ export class Board {
     constructor({ id, name, isNew, app }) {
         this.app = app
         this.id = id
-        this.storageKey = `board_${id}`
+        this.storageKey = this.elId = `board_${id}`
 
         if (!isNew) this.load()
 
@@ -50,11 +50,12 @@ export class Board {
     }
 
     get isFull() {
+        // column == max and each column full
         this.data.columnsIds.length == this.maxColumns
     }
 
     getEl() {
-        return window[this.id]
+        return window[this.elId]
     }
 
     getName() {
@@ -176,7 +177,7 @@ export class Board {
         el.scrollTop = this.scrollTop - dy
     }
 
-    onMouseup(e) {
+    onMouseup() {
         removeEventListener('mousemove', this.mousemoveHandler)
         removeEventListener('mouseup', this.mouseupHandler)
     }
@@ -205,7 +206,7 @@ export class Board {
                 ${() => this.dropdown.render()}
             </header>
 
-            <ul class="board__content" id="${this.id}"
+            <ul class="board__content" id="${this.elId}"
                 @mousedown="${e => this.onMousedown(e)}">
                 
                 ${() => this.getColumns().map(column => column.render())}

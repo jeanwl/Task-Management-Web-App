@@ -1,10 +1,7 @@
 import { Dialog } from './Dialog.js'
 import { html } from '../../js/arrow.js'
-import { generateId } from '../../js/helpers.js'
 
 export class ConfirmDialog extends Dialog {
-    id = generateId()
-
     constructor({ board, task }) {
         super()
         

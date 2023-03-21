@@ -21,6 +21,7 @@ dialog {
     border: unset;
     background: unset;
     overflow: visible;
+    cursor: initial;
 }
 
 html {

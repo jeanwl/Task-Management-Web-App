@@ -1,10 +1,13 @@
 import { reactive, html } from '../../js/arrow.js'
+import { generateId } from '../../js/generateId.js'
 
 export class Dialog {
+    elId = `dialog_${generateId()}`
+
     data = reactive({})
     
     get el() {
-        return window[this.id]
+        return window[this.elId]
     }
 
     show() {
@@ -24,7 +27,7 @@ export class Dialog {
     render() {
         return this.data.show ? html`
         
-        <dialog class="dialog" id="${this.id}"
+        <dialog class="dialog" id="${this.elId}"
             @click="${() => this.close()}"
             @close="${() => this.onClose()}">
             

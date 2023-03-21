@@ -10,7 +10,7 @@ export class Subtask {
     constructor({ id, title, isNew, task }) {
         this.task = task
         this.id = id
-        this.storageKey = `subtask_${id}`
+        this.storageKey = this.elId = `subtask_${id}`
 
         if (!isNew) this.load()
 
@@ -65,16 +65,16 @@ export class Subtask {
     }
 
     render() {
-        const { data } = this
+        const { data, elId } = this
 
         return html`
         
         <li class="subtask">
-            <input type="checkbox" id="${this.id}"
+            <input type="checkbox" id="${elId}"
                 checked="${() => data.isCompleted}"
                 @change="${() => data.isCompleted = !data.isCompleted}">
             
-            <label for="${this.id}">${data.title}</label>
+            <label for="${elId}">${data.title}</label>
         </li>
 
         `

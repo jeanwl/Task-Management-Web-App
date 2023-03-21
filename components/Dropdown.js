@@ -1,8 +1,9 @@
 import { reactive, html } from '../js/arrow.js'
-import { generateId } from '../js/helpers.js'
+import { generateId } from '../js/generateId.js'
 
 export class Dropdown {
-    id = generateId()
+    elId = `dropdown_${generateId()}`
+    
     clickHandler = e => this.onClick(e)
     keyHandler = e => this.onKey(e)
 
@@ -22,19 +23,19 @@ export class Dropdown {
     open() {
         this.data.isOpen = true
 
-        addEventListener('click', this.clickHandler, true)
+        addEventListener('pointerdown', this.clickHandler, true)
         addEventListener('keydown', this.keyHandler, true)
     }
 
     close() {
-        removeEventListener('click', this.clickHandler, true)
+        removeEventListener('pointerdown', this.clickHandler, true)
         removeEventListener('keydown', this.keyHandler, true)
 
         this.data.isOpen = false
     }
 
     onClick(e) {
-        if (e.target.id == this.id) return
+        if (e.target.closest(`#${this.elId}`)) return
 
         this.close()
     }
@@ -50,8 +51,8 @@ export class Dropdown {
     render() {
         return html`
         
-        <div class="dropdown">
-            <button class="dropdown__toggle" id="${this.id}"
+        <div class="dropdown" id="${this.elId}">
+            <button class="dropdown__toggle"
                 aria-haspopup="true"
                 aria-expanded="${() => this.data.isOpen}"
                 @click="${() => this.toggle()}">
@@ -71,7 +72,7 @@ export class Dropdown {
         return html`
         
         <menu class="dropdown__menu"
-            aria-labelledby="${this.id}">
+            aria-labelledby="${this.elId}">
             
             ${this.renderItems()}
         </menu>
@@ -87,7 +88,7 @@ export class Dropdown {
             
             <li class="dropdown__item${className} | text text--l">
                 <button class="dropdown__btn"
-                    @click="${() => action()}">
+                    @click="${() => { action(); this.close() }}">
                     
                     ${text}
                 </button>

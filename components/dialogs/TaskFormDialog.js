@@ -1,10 +1,8 @@
 import { Dialog } from './Dialog.js'
 import { reactive, html } from '../../js/arrow.js'
-import { generateId } from '../../js/helpers.js'
+import { generateId } from '../../js/generateId.js'
 
 export class TaskFormDialog extends Dialog {
-    id = generateId()
-
     constructor({ board, task }) {
         super()
         
@@ -151,7 +149,7 @@ export class TaskFormDialog extends Dialog {
 
     renderSubtasks() {
         const { subtasks } = this
-        const placeholders = this.isEdit ? null : this.subtasksPlaceholders
+        const placeholders = !this.isEdit && this.subtasksPlaceholders
 
         return subtasks.map(({ title, id }, i) => {
             return html`
@@ -183,7 +181,7 @@ export class TaskFormDialog extends Dialog {
     }
 
     renderColumnsOptions() {
-        const columnId = this.isEdit ? this.task.column.id : null
+        const columnId = this.isEdit && this.task.column.id
 
         return this.columnsOptions.map(({ id, name }) => {
             return html`

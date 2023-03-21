@@ -3,11 +3,10 @@ import { TaskFormDialog } from './TaskFormDialog.js'
 import { ConfirmDialog } from './ConfirmDialog.js'
 import { Dropdown } from '../Dropdown.js'
 import { html } from '../../js/arrow.js'
-import { generateId } from '../../js/helpers.js'
+import { generateId } from '../../js/generateId.js'
 
 export class TaskDialog extends Dialog {
-    id = generateId()
-    selectId = generateId()
+    selectElId = `select_${generateId()}`
 
     constructor(task) {
         super()
@@ -30,7 +29,7 @@ export class TaskDialog extends Dialog {
     }
 
     get selectEl() {
-        return window[this.selectId]
+        return window[this.selectElId]
     }
 
     show() {
@@ -49,9 +48,9 @@ export class TaskDialog extends Dialog {
     }
 
     onClose() {
-        super.onClose()
-        
         const selectId = this.selectEl.value
+        
+        super.onClose()
 
         if (this.columnId != selectId) {
             const { task } = this
@@ -118,7 +117,7 @@ export class TaskDialog extends Dialog {
         
         <div class="task-column">
             <label for="column">Column</label>
-            <select name="column" id="${this.selectId}">
+            <select name="column" id="${this.selectElId}">
                 ${this.renderColumnsOptions()}
             </select>
         </div>

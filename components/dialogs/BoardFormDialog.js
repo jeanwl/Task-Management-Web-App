@@ -1,11 +1,8 @@
 import { Dialog } from './Dialog.js'
 import { reactive, html } from '../../js/arrow.js'
-import { generateId } from '../../js/helpers.js'
+import { generateId } from '../../js/generateId.js'
 
 export class BoardFormDialog extends Dialog {
-    id = generateId()
-    defaultColumns = ['Todo', 'Doing']
-
     constructor({ app, board }) {
         super()
         
@@ -21,6 +18,7 @@ export class BoardFormDialog extends Dialog {
             this.title = 'Add New Board'
             this.name = ''
             this.btnText = 'Create New Board'
+            this.defaultColumns = ['Todo', 'Doing']
         }
     }
 

@@ -1,4 +1,4 @@
-import { generateId } from './helpers.js'
+import { generateId } from './generateId.js'
 
 const boards = [
     {
