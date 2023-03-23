@@ -2,6 +2,11 @@
     position: relative;
     width: 100%;
     height: 100%;
+    
+    --header-width: 300px;
+    --sidebar-width: 300px;
+    --sidebar-item-width: 276px;
+    --sidebar-transition: .4s;
 }
 .app:not([data-is-dark]) {
     color-scheme: light;
@@ -9,27 +14,49 @@
 .app[data-is-dark] {
     color-scheme: dark;
 }
+.app[data-sidebar-closed] {
+    --header-width: 210px;
+}
+@media (max-width: 1023.98px) {
+    .app {
+        --header-width: 260px;
+        --sidebar-width: 260px;
+        --sidebar-item-width: 240px;
+    }
+    .app[data-sidebar-closed] {
+        --header-width: 200px;
+    }
+}
 
 .app__header {
     box-sizing: border-box;
     position: absolute;
     display: flex;
     align-items: center;
-    width: 300px;
+    width: var(--header-width);
     height: 97px;
     border-right: 1px solid var(--light-gray);
     border-bottom: 1px solid var(--light-gray);
     background-color: white;
+
+    transition: width var(--sidebar-transition);
 }
 
 .kanban-logo {
+    position: relative;
     width: 153px;
     height: 26px;
     margin-left: 34px;
     background-image: url(../images/logo-dark.svg), url(../images/logo-light.svg);
+    z-index: 2;
+
+    transition: translate var(--sidebar-transition);
 }
 .app[data-is-dark] .kanban-logo {
     background-size: 0, 100%;
+}
+.app[data-sidebar-closed] .kanban-logo {
+    translate: -10px;
 }
 
 .app__content {
@@ -38,13 +65,29 @@
 }
 
 .sidebar {
+    position: relative;
+    min-width: var(--sidebar-width);
+    margin-top: 96px;
+    z-index: 1;
+    
+    transition: min-width var(--sidebar-transition);
+}
+.sidebar[aria-hidden] {
+    min-width: 0;
+}
+
+.sidebar__wrapper {
+    position: absolute;
+    top: 0;
+    right: 0;
     display: flex;
     flex-direction: column;
-    min-width: 300px;
-    margin-block: 96px 32px;
+    width: var(--sidebar-width);
+    height: 100%;
+    padding-bottom: 32px;
     border-right: 1px solid var(--light-gray);
     background-color: white;
-    z-index: 1;
+    box-sizing: border-box;
 }
 
 .sidebar__title {
@@ -62,13 +105,14 @@
 .sidebar__hide-btn {
     display: flex;
     align-items: center;
-    width: 276px;
-    height: 48px;
+    width: var(--sidebar-item-width);
+    min-height: 48px;
     border-radius: 0 24px 24px 0;
     color: var(--gray);
 
     transition: background-color .2s;
 }
+
 .sidebar__board:hover,
 .sidebar__new-board-btn:hover,
 .sidebar__hide-btn:hover {
@@ -82,13 +126,24 @@
     display: flex;
     align-items: center;
     width: 100%;
-    height: 100%;
+    min-height: inherit;
     padding-left: 32px;
 }
 
 .sidebar__new-board-btn {
     padding-left: 32px;
     color: var(--purple);
+}
+
+@media (max-width: 1023.98px) {
+    .sidebar__title {
+        margin-left: 24px;
+    }
+
+    .sidebar__board button,
+    .sidebar__new-board-btn {
+        padding-left: 24px;
+    }
 }
 
 .board-icon {
@@ -133,6 +188,7 @@
     height: 14px;
     background-color: white;
     border-radius: 50%;
+    
     transition: translate .4s;
 }
 .sidebar__theme-btn:hover .theme-btn__toggler {
@@ -159,35 +215,62 @@
     height: 48px;
     background: var(--purple) url(../images/icon-show-sidebar.svg) no-repeat center;
     border-radius: 0 24px 24px 0;
+
+    transition: background-color .2s, opacity var(--sidebar-transition);
+}
+.show-sidebar-btn:hover {
+    background-color: var(--light-purple);
+}
+.app:not([data-sidebar-closed]) .show-sidebar-btn {
+    opacity: 0;
 }
 
 .board {
     flex-grow: 1;
     overflow: hidden;
 }
+.board--empty {
+    position: relative;
+}
+
+.board__new {
+    position: absolute;
+    inset: 0;
+    height: 100px;
+    max-width: calc(100% - 40px);
+    margin: auto;
+    text-align: center;
+}
+.board__new p {
+    margin-bottom: 32px;
+    color: var(--gray);
+}
 
 .board__header {
     box-sizing: border-box;
     position: absolute;
     right: 0;
-    width: calc(100% - 300px);
+    width: calc(100% - var(--header-width));
     display: flex;
     align-items: center;
     min-height: 97px;
     padding-inline: 24px 12px;
     border-bottom: 1px solid var(--light-gray);
     background-color: white;
+
+    transition: width var(--sidebar-transition);
 }
 
 .new-task-btn {
     margin-left: auto;
-    padding-inline: 24px;
+    margin-right: 12px;
 }
 .new-task-btn:before {
     content: '+ '
 }
 
 .board__content {
+    position: relative;
     display: flex;
     gap: 24px;
     height: calc(100% - 97px);
@@ -206,7 +289,6 @@
 
 .column {
     width: 280px;
-    height: fit-content;
     min-height: 100%;
     flex-shrink: 0;
     padding-top: 24px;
@@ -298,13 +380,8 @@
     color: var(--gray);
 }
 
-.subtask,
-.subtask :is(input, label) {
-    cursor: pointer;
-}
-
-.subtask input:checked+label {
-    text-decoration: line-through;
+.dialog::backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
 }
 
 .dialog, .dialog::backdrop {
@@ -319,17 +396,86 @@
     padding: 32px;
     border-radius: 6px;
     background-color: white;
+    box-sizing: border-box;
 
     animation: scale .2s;
     will-change: scale;
+}
+
+.dialog__content :is(label, h3) {
+    color: var(--gray);
+}
+
+.dialog__content select {
+    appearance: none;
+    display: block;
+    width: 100%;
+    margin-top: 8px;
+    padding: 8px 16px;
+    border-radius: 4px;
+    border: 1px solid var(--input-border);
+    background: url(/images/icon-chevron-down.svg) no-repeat;
+    background-position: calc(100% - 16px) center;
+    color: black;
+    cursor: pointer;
+
+    transition: border-color .2s;
+}
+.dialog__content select:hover {
+    border-color: var(--purple);
+}
+
+.dialog__content option {
+    color: var(--gray);
 }
 
 .task-dialog__top {
     display: flex;
 }
 
-.subtasks__title {
-    color: var(--gray);
+.subtasks__list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.subtask {
+    position: relative;
+    background-color: var(--lightest-blue);
+    border-radius: 4px;
+
+    transition: background-color .2s;
+}
+.subtask:hover {
+    background-color: hsla(242, 48%, 58%, 25%);
+}
+
+.subtask__checkbox {
+    appearance: none;
+    position: absolute;
+    inset: 0 auto 0 12px;
+    width: 16px;
+    height: 16px;
+    margin: auto;
+    border: 1px solid var(--input-border);
+    cursor: pointer;
+    background-color: white;
+    border-radius: 2px;
+}
+.subtask__checkbox:checked {
+    background: var(--purple) url(/images/icon-check.svg) no-repeat center;
+}
+
+.subtask__label {
+    display: block;
+    padding: 12px 12px 12px 44px;
+    cursor: pointer;
+}
+
+.subtask__checkbox:checked + .subtask__label {
+    text-decoration: line-through;
+    opacity: 0.5;
 }
 
 .dialog__content .dropdown {
@@ -340,6 +486,19 @@
 
 .dialog__content .dropdown__menu {
     right: -72px;
+}
+
+.task-dialog__title {
+    margin-right: 48px;
+}
+
+.dialog-delete__title {
+    color: var(--red);
+}
+
+.dialog-delete__menu {
+    display: flex;
+    gap: 16px;
 }
 
 form {

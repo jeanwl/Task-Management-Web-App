@@ -70,11 +70,15 @@ export class Subtask {
         return html`
         
         <li class="subtask">
-            <input type="checkbox" id="${elId}"
+            <input class="subtask__checkbox" type="checkbox" id="${elId}"
                 checked="${() => data.isCompleted}"
                 @change="${() => data.isCompleted = !data.isCompleted}">
             
-            <label for="${elId}">${data.title}</label>
+            <label class="subtask__label | text text--m"
+                for="${elId}">
+                
+                ${data.title}
+            </label>
         </li>
 
         `

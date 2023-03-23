@@ -212,15 +212,7 @@ export class Board {
             <ul class="board__content" id="${this.elId}"
                 @mousedown="${e => this.onMousedown(e)}">
                 
-                ${() => this.getColumns().map(column => column.render())}
-
-                <li class="column column--new">
-                    <button class="column__new-btn | title title--m"
-                        @click="${() => this.columnFormDialog.show()}">
-                        
-                        + New Column
-                    </button>
-                </li>
+                ${() => this.renderColumns()}
             </ul>
 
             ${() => this.boardFormDialog.render()}
@@ -228,6 +220,39 @@ export class Board {
             ${() => this.taskFormDialog.render()}
             ${() => this.columnFormDialog.render()}
         </section>
+
+        `
+    }
+
+    renderColumns() {
+        const columns = this.getColumns()
+
+        if (columns.length == 0) return html`
+        
+        <div class="board__new">
+            <p class="title title--l">
+                This board is empty. Create a new column to get started.
+            </p>
+            <button class="btn btn--large btn--primary"
+                @click="${() => this.columnFormDialog.show()}">
+                
+                + Create New Column
+            </button>
+        </div>
+
+        `
+
+        return html`
+        
+        ${() => columns.map(column => column.render())}
+
+        <li class="column column--new">
+            <button class="column__new-btn | title title--m"
+                @click="${() => this.columnFormDialog.show()}">
+                
+                + New Column
+            </button>
+        </li>
 
         `
     }

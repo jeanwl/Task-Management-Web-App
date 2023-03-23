@@ -18,7 +18,7 @@ export class ConfirmDialog extends Dialog {
     show() {
         const { board, column, task } = this
 
-        this.title =
+        this.text =
             board && `Are you sure you want to delete the ‘${board.getName()}’ board? This action will remove all columns and tasks and cannot be reversed.` ||
             column && `Are you sure you want to delete the ‘${column.getName()}’ column and its tasks? This action cannot be reversed.` ||
             task && `Are you sure you want to delete the ‘${task.getTitle()}’ task and its subtasks? This action cannot be reversed.`
@@ -37,11 +37,15 @@ export class ConfirmDialog extends Dialog {
     renderContent() {
         return html`
         
-        <h2>${this.title}</h2>
+        <h2 class="dialog-delete__title | title title--l">
+            ${this.title}
+        </h2>
 
-        <p>${this.text}</p>
+        <p class="text text--l">
+            ${this.text}
+        </p>
 
-        <menu>
+        <menu class="dialog-delete__menu">
             <li>
                 <button @click="${() => this.confirm()}">
                     Delete

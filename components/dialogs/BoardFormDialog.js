@@ -94,7 +94,7 @@ export class BoardFormDialog extends Dialog {
         return html`
         
         <form method="dialog" @submit="${(e) => this.onSubmit(e)}">
-            <h2 class="">
+            <h2 class="title title--l">
                 ${this.title}
             </h2>
 

@@ -29,6 +29,8 @@
 }
 
 .btn {
+    padding-inline: 24px;
+    
     transition-property: color, background-color;
     transition-duration: .2s;
 }
@@ -74,7 +76,6 @@
     width: 48px;
     height: 48px;
     border-radius: 50%;
-    margin-left: 12px;
     background: url(../images/icon-vertical-ellipsis.svg) no-repeat center;
 
     transition: background-color .2s;

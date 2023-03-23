@@ -42,7 +42,7 @@ export class ColumnFormDialog extends Dialog {
         }
         else {
             const { defaultColors } = this
-            const nColumns = this.board.getColumns().length
+            const nColumns = this.board.getColumns().length || 1
             const colorIndex = (nColumns - 1) % defaultColors.length
             
             this.color = defaultColors[colorIndex]

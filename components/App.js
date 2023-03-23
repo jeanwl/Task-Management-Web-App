@@ -12,7 +12,8 @@ export class App {
     boardFormDialog = new BoardFormDialog({ app: this })
 
     data = reactive({
-        boardsIds: []
+        boardsIds: [],
+        hideSidebar: false
     })
     
     constructor() {
@@ -50,7 +51,7 @@ export class App {
         }
         
         data.currentBoard = currentBoard
-        data.hideSidebar = hideSidebar
+        if (hideSidebar != null) data.hideSidebar = hideSidebar
         data.isDark = isDark ?? matchMedia('(prefers-color-scheme: dark)').matches
     }
 
@@ -93,19 +94,11 @@ export class App {
     render() {
         const { data } = this
         
-        const showSidebarBtn = () => data.hideSidebar ? html`
-        
-        <button class="show-sidebar-btn"
-            @click="${() => data.hideSidebar = false}">
-            
-            <span class="visually-hidden">Show Sidebar</span>
-        </button>
-
-        ` : ''
-
         return html`
         
-        <div class="app" data-is-dark="${() => data.isDark}">
+        <div class="app" data-is-dark="${() => data.isDark}"
+            data-sidebar-closed="${() => data.hideSidebar}">
+
             <header class="app__header">
                 <h1 class="kanban-logo">
                     <span class="visually-hidden">Kanban</span>
@@ -114,9 +107,13 @@ export class App {
 
             <main class="app__content">
                 ${() => this.renderSidebar()}
-                ${showSidebarBtn}
-                
                 ${() => this.renderBoard()}
+
+                <button class="show-sidebar-btn"
+                    @click="${() => data.hideSidebar = false}">
+                    
+                    <span class="visually-hidden">Show Sidebar</span>
+                </button>
             </main>
 
             ${() => this.boardFormDialog.render()}
@@ -127,8 +124,6 @@ export class App {
 
     renderSidebar() {
         const { data } = this
-
-        if (data.hideSidebar) return ''
 
         const newBoardBtn = () => this.isFull ? '' : html`
         
@@ -143,31 +138,33 @@ export class App {
 
         return html`
             
-        <aside class="sidebar">
-            <h2 class="sidebar__title | title title--s">
-                ${() => `All boards (${data.boardsIds.length})`}
-            </h2>
+        <aside class="sidebar" aria-hidden="${() => data.hideSidebar}">
+            <div class="sidebar__wrapper">
+                <h2 class="sidebar__title | title title--s">
+                    ${() => `All boards (${data.boardsIds.length})`}
+                </h2>
 
-            <menu class="sidebar__boards">
-                ${() => this.renderBoardList()}
+                <menu class="sidebar__boards">
+                    ${() => this.renderBoardList()}
 
-                <li>${newBoardBtn}</li>
-            </menu>
+                    <li>${newBoardBtn}</li>
+                </menu>
 
-            <button class="sidebar__theme-btn"
-                aria-pressed="${() => data.isDark}"
-                @click="${() => data.isDark = !data.isDark}">
-                
-                <span class="theme-btn__toggler">
-                    <span class="visually-hidden">Toggle theme</span>
-                </span>
-            </button>
+                <button class="sidebar__theme-btn"
+                    aria-pressed="${() => data.isDark}"
+                    @click="${() => data.isDark = !data.isDark}">
+                    
+                    <span class="theme-btn__toggler">
+                        <span class="visually-hidden">Toggle theme</span>
+                    </span>
+                </button>
 
-            <button class="sidebar__hide-btn | title title--m"
-                @click="${() => data.hideSidebar = true}">
-                
-                Hide Sidebar
-            </button>
+                <button class="sidebar__hide-btn | title title--m"
+                    @click="${() => data.hideSidebar = true}">
+                    
+                    Hide Sidebar
+                </button>
+            </div>
         </aside>
         
         `
@@ -176,7 +173,22 @@ export class App {
     renderBoard() {
         const { data } = this
 
-        if (data.boardsIds.length == 0) return ''
+        if (data.boardsIds.length == 0) return html`
+        
+        <section class="board board--empty">
+            <div class="board__new">
+                <p class="title title--l">
+                    Create a new board to get started.
+                </p>
+                <button class="btn btn--large btn--primary"
+                    @click="${() => this.boardFormDialog.show()}">
+                    
+                    + Create New Board
+                </button>
+            </div>
+        </section>
+
+        `
 
         return this.boards[data.currentBoard].render()
     }

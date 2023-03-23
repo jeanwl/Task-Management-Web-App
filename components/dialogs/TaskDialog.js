@@ -100,7 +100,7 @@ export class TaskDialog extends Dialog {
         return html`
         
         <div class="task-subtasks">
-            <h3 class="subtasks__title | text text--m">
+            <h3 class="text text--m">
                 ${() => `Subtasks (${task.getNCompleted()} of ${nSubtasks})`}
             </h3>
             
@@ -116,8 +116,12 @@ export class TaskDialog extends Dialog {
         return this.columnsOptions.length > 1 ? html`
         
         <div class="task-column">
-            <label for="column">Column</label>
-            <select name="column" id="${this.selectElId}">
+            <label class="text text--m" for="column">
+                Current Column
+            </label>
+            <select class="text text--l"
+                name="column" id="${this.selectElId}">
+                
                 ${this.renderColumnsOptions()}
             </select>
         </div>
@@ -129,7 +133,9 @@ export class TaskDialog extends Dialog {
         return this.columnsOptions.map(({ id, name, current }) => {
             return html`
             
-            <option value="${id}" selected="${() => current}">
+            <option class="text text--l"
+                value="${id}" selected="${() => current}">
+                
                 ${name}
             </option>
 

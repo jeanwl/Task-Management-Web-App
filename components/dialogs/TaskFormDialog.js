@@ -135,7 +135,10 @@ export class TaskFormDialog extends Dialog {
                 </button>
             </fieldset>
 
-            ${this.renderColumnSelect()}
+            <label for="column">Column</label>
+            <select name="column">
+                ${this.renderColumnsOptions()}
+            </select>
             
             <button type="submit">
                 ${this.btnText}
@@ -163,19 +166,6 @@ export class TaskFormDialog extends Dialog {
 
             `.key(id)
         })
-    }
-
-    renderColumnSelect() {
-        if (this.columnsOptions.length < 2) return ''
-
-        return html`
-        
-        <label for="column">Column</label>
-        <select name="column">
-            ${this.renderColumnsOptions()}
-        </select>
-        
-        `
     }
 
     renderColumnsOptions() {
