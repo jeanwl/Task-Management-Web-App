@@ -53,6 +53,7 @@ export class Dropdown {
         
         <div class="dropdown" id="${this.elId}">
             <button class="dropdown__toggle"
+                type="button"
                 aria-haspopup="true"
                 aria-expanded="${() => this.data.isOpen}"
                 @click="${() => this.toggle()}">
@@ -87,7 +88,7 @@ export class Dropdown {
             return html`
             
             <li class="dropdown__item${className} | text text--l">
-                <button class="dropdown__btn"
+                <button class="dropdown__btn" type="button"
                     @click="${() => { action(); this.close() }}">
                     
                     ${text}

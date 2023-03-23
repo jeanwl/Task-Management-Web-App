@@ -2,6 +2,7 @@ import { Column } from './Column.js'
 import { BoardFormDialog } from './dialogs/BoardFormDialog.js'
 import { ConfirmDialog } from './dialogs/ConfirmDialog.js'
 import { TaskFormDialog } from './dialogs/TaskFormDialog.js'
+import { ColumnFormDialog } from './dialogs/ColumnFormDialog.js'
 import { Dropdown } from './Dropdown.js'
 import { reactive, html } from '../js/arrow.js'
 
@@ -16,6 +17,7 @@ export class Board {
     boardFormDialog = new BoardFormDialog({ board: this })
     confirmDialog = new ConfirmDialog({ board: this })
     taskFormDialog = new TaskFormDialog({ board: this })
+    columnFormDialog = new ColumnFormDialog({ board: this })
 
     dropdown = new Dropdown([
         {
@@ -86,8 +88,8 @@ export class Board {
         localStorage.setItem(this.storageKey, JSON.stringify(save))
     }
 
-    addColumn({ id, name, isNew }) {
-        const column = new Column({ id, name, isNew, board: this })
+    addColumn({ id, name, color, isNew }) {
+        const column = new Column({ id, name, color, isNew, board: this })
 
         this.columns[id] = column
         this.data.columnsIds.push(id)
@@ -122,9 +124,9 @@ export class Board {
 
         data.name = name
         
-        editedColumns.forEach(({ id, name, isNew }, i) => {
+        editedColumns.forEach(({ id, name, color, isNew }, i) => {
             if (isNew) {
-                this.addColumn({ id, name, isNew })
+                this.addColumn({ id, name, color, isNew })
                 this.moveColumn({ column: columns[id], to: i })
 
                 return
@@ -132,6 +134,7 @@ export class Board {
 
             const column = columns[id]
             column.setName(name)
+            column.setColor(color)
 
             if (columnsIds.indexOf(id) == i) return
 
@@ -210,11 +213,20 @@ export class Board {
                 @mousedown="${e => this.onMousedown(e)}">
                 
                 ${() => this.getColumns().map(column => column.render())}
+
+                <li class="column column--new">
+                    <button class="column__new-btn | title title--m"
+                        @click="${() => this.columnFormDialog.show()}">
+                        
+                        + New Column
+                    </button>
+                </li>
             </ul>
 
             ${() => this.boardFormDialog.render()}
             ${() => this.confirmDialog.render()}
             ${() => this.taskFormDialog.render()}
+            ${() => this.columnFormDialog.render()}
         </section>
 
         `

@@ -28,11 +28,11 @@ export class Dialog {
         return this.data.show ? html`
         
         <dialog class="dialog" id="${this.elId}"
-            @click="${() => this.close()}"
+            @pointerdown="${() => this.close()}"
             @close="${() => this.onClose()}">
             
             <div class="dialog__content"
-                @click="${e => e.stopPropagation()}">
+                @pointerdown="${e => e.stopPropagation()}">
                 
                 ${this.renderContent()}
             </div>

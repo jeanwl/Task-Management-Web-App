@@ -6,6 +6,7 @@ const boards = [
         columns: [
             {
                 name: 'Todo',
+                color: '#49C4E5',
                 tasks: [
                     {
                         title: 'Build UI for onboarding flow',
@@ -67,6 +68,7 @@ const boards = [
             },
             {
                 name: 'Doing',
+                color: '#6460C7',
                 tasks: [
                     {
                         title: 'Design settings and search pages',
@@ -172,6 +174,7 @@ const boards = [
             },
             {
                 name: 'Done',
+                color: '#67E2AE',
                 tasks: [
                     {
                         title: 'Conduct 5 wireframe tests',
@@ -272,6 +275,7 @@ const boards = [
         columns: [
             {
                 name: 'Todo',
+                color: '#49C4E5',
                 tasks: [
                     {
                         title: 'Plan Product Hunt launch',
@@ -347,10 +351,12 @@ const boards = [
             },
             {
                 name: 'Doing',
+                color: '#6460C7',
                 tasks: []
             },
             {
                 name: 'Done',
+                color: '#67E2AE',
                 tasks: []
             }
         ]
@@ -360,6 +366,7 @@ const boards = [
         columns: [
             {
                 name: 'Now',
+                color: '#49C4E5',
                 tasks: [
                     {
                         title: 'Launch version one',
@@ -397,10 +404,12 @@ const boards = [
             },
             {
                 name: 'Next',
+                color: '#6460C7',
                 tasks: []
             },
             {
                 name: 'Later',
+                color: '#67E2AE',
                 tasks: []
             }
         ]
@@ -453,12 +462,13 @@ const loadTasks = (tasks) => {
 const loadColumns = (columns) => {
     const ids = []
 
-    for (const { name, tasks } of columns) {
+    for (const { name, color, tasks } of columns) {
         const id = generateId()
         ids.push(id)
 
         const data = {
             name,
+            color,
             tasksIds: loadTasks(tasks)
         }
 

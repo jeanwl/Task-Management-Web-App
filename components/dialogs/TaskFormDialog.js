@@ -12,12 +12,10 @@ export class TaskFormDialog extends Dialog {
 
         if (this.isEdit) {
             this.title = 'Edit Task'
-            this.titlePlaceholder = this.descriptionPlaceholder = ''
             this.btnText = 'Save Changes'
         }
         else {
             this.title = 'Add New Task'
-            this.taskTitle = this.description = ''
             this.titlePlaceholder = 'e.g. Take coffee break'
             this.descriptionPlaceholder = 'e.g. It’s always good to take a break. This 15 minute break will recharge the batteries a little.'
             this.subtasksPlaceholders = ['e.g. Make coffee', 'e.g. Drink coffee & smile']

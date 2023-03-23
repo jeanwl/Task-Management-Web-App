@@ -38,10 +38,9 @@
 }
 
 .sidebar {
-    flex-shrink: 0;
     display: flex;
     flex-direction: column;
-    width: 300px;
+    min-width: 300px;
     margin-block: 96px 32px;
     border-right: 1px solid var(--light-gray);
     background-color: white;
@@ -67,6 +66,8 @@
     height: 48px;
     border-radius: 0 24px 24px 0;
     color: var(--gray);
+
+    transition: background-color .2s;
 }
 .sidebar__board:hover,
 .sidebar__new-board-btn:hover,
@@ -76,7 +77,6 @@
 .sidebar__board[aria-current] {
     background-color: var(--purple);
     color: white;
-    pointer-events: none;
 }
 .sidebar__board button {
     display: flex;
@@ -191,7 +191,7 @@
     display: flex;
     gap: 24px;
     height: calc(100% - 97px);
-    padding: 24px;
+    padding: 0 24px 24px;
     margin-top: 97px;
     overflow: auto;
     box-sizing: border-box;
@@ -206,11 +206,35 @@
 
 .column {
     width: 280px;
+    height: fit-content;
+    min-height: 100%;
     flex-shrink: 0;
+    padding-top: 24px;
+    box-sizing: border-box;
+}
+.column--new {
+    padding-top: 14px;
+}
+
+.column__new-btn {
+    position: sticky;
+    top: 6px;
+    width: 100%;
+    height: 35px;
+    color: var(--gray);
+    border-radius: 24px;
+    background-color: var(--light-gray);
+    text-align: center;
+
+    transition: opacity .2s;
+}
+.column__new-btn:hover {
+    opacity: 0.6;
 }
 
 .column__name {
-    position: relative;
+    position: sticky;
+    top: 16px;
     display: flex;
     margin-bottom: 24px;
     z-index: 0;
@@ -218,18 +242,18 @@
 }
 .column__name:before {
     content: '';
-    display: block;
-    width: 15px;
-    height: 15px;
-    border-radius: 50%;
-    margin-right: 12px;
+    position: absolute;
+    inset: -16px -10px;
+    background-color: hsla(220, 69%, 97%, 70%);
+    backdrop-filter: blur(4px);
+    z-index: -1;
 }
 .column__name:after {
     content: '';
     position: absolute;
-    inset: -8px;
+    inset: -10px;
     background-color: var(--light-gray);
-    border-radius: 15px;
+    border-radius: 32px;
     z-index: -1;
     pointer-events: none;
 
@@ -238,14 +262,12 @@
 .column__name:not(:hover):after {
     opacity: 0;
 }
-.column:nth-child(3n + 1) .column__name:before {
-    background-color: var(--blue);
-}
-.column:nth-child(3n + 2) .column__name:before {
-    background-color: var(--purple);
-}
-.column:nth-child(3n + 3) .column__name:before {
-    background-color: var(--green);
+
+.column__circle {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    margin-right: 12px;
 }
 
 .tasks {
@@ -264,6 +286,8 @@
 
 .task__title {
     margin-bottom: 8px;
+    overflow-wrap: break-word;
+
     transition: color .2s;
 }
 .task:hover .task__title {

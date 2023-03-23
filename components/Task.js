@@ -155,7 +155,9 @@ export class Task {
                 ${() => `${this.getNCompleted()} of ${subtasksIds.length} subtasks`}
             </p>
 
-            ${() => this.taskDialog.render()}
+            <div @click="${e => e.stopPropagation()}">
+                ${() => this.taskDialog.render()}
+            </div>
         </li>
 
         `

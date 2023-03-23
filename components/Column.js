@@ -1,15 +1,18 @@
 import { Task } from './Task.js'
+import { ColumnFormDialog } from './dialogs/ColumnFormDialog.js'
 import { reactive, html } from '../js/arrow.js'
 
 export class Column {
     tasks = {}
-    keysToSave = ['name', 'tasksIds']
+    keysToSave = ['name', 'color', 'tasksIds']
+    
+    columnFormDialog = new ColumnFormDialog({ column: this })
 
     data = reactive({
         tasksIds: []
     })
 
-    constructor({ id, name, isNew, board }) {
+    constructor({ id, name, color, isNew, board }) {
         this.board = board
         this.id = id
         this.storageKey = `column_${id}`
@@ -22,7 +25,10 @@ export class Column {
             data.$on(key, () => this.save())
         }
 
-        if (isNew) data.name = name
+        if (!isNew) return
+        
+        data.name = name
+        data.color = color
     }
 
     getName() {
@@ -31,6 +37,14 @@ export class Column {
 
     setName(name) {
         this.data.name = name
+    }
+
+    getColor() {
+        return this.data.color
+    }
+
+    setColor(color) {
+        this.data.color = color
     }
 
     getTasks() {
@@ -42,11 +56,13 @@ export class Column {
     load() {
         const savedData = localStorage.getItem(this.storageKey)
         
-        const { name, tasksIds } = JSON.parse(savedData)
+        const { name, color, tasksIds } = JSON.parse(savedData)
+        const { data } = this
         
         for (const id of tasksIds) this.addTask({ id })
         
-        this.data.name = name
+        data.name = name
+        data.color = color
     }
 
     save() {
@@ -97,6 +113,13 @@ export class Column {
         localStorage.removeItem(this.storageKey)
     }
 
+    edit({ name, color }) {
+        const { data } = this
+
+        data.name = name
+        data.color = color
+    }
+
     render() {
         const { data } = this
 
@@ -104,7 +127,11 @@ export class Column {
         
         <li class="column">
             <h3 class="column__name | title title--s"
+                @click="${() => this.columnFormDialog.show()}"
                 @mousedown="${e => e.stopPropagation()}">
+                
+                <span class="column__circle" aria-hidden="true"
+                    style="background-color: ${data.color}"></span>
                 
                 ${() => `${data.name} (${data.tasksIds.length})`}
             </h3>
@@ -112,6 +139,11 @@ export class Column {
             <ul class="tasks">
                 ${() => this.getTasks().map(task => task.render())}
             </ul>
+
+            <div @click="${e => e.stopPropagation()}"
+                @mousedown="${e => e.stopPropagation()}">
+                ${() => this.columnFormDialog.render()}
+            </div>
         </li>
         
         `

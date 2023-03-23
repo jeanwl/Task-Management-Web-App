@@ -16,9 +16,10 @@ export class BoardFormDialog extends Dialog {
         }
         else {
             this.title = 'Add New Board'
-            this.name = ''
+            this.namePlaceholder = 'e.g. Web Design'
             this.btnText = 'Create New Board'
             this.defaultColumns = ['Todo', 'Doing']
+            this.defaultColors = ['#49C4E5', '#6460C7', '#67E2AE']
         }
     }
 
@@ -33,13 +34,16 @@ export class BoardFormDialog extends Dialog {
             columns = board.getColumns().map(column => (
                 this.newColumn({
                     id: column.id,
-                    name: column.getName()
+                    name: column.getName(),
+                    color: column.getColor()
                 })
             ))
         }
         else {
-            columns = this.defaultColumns.map(name => (
-                this.newColumn({ name })
+            const { defaultColors } = this
+
+            columns = this.defaultColumns.map((name, i) => (
+                this.newColumn({ name, color: defaultColors[i] })
             ))
         }
         
@@ -48,10 +52,19 @@ export class BoardFormDialog extends Dialog {
         super.show()
     }
 
-    newColumn({ id, name } = {}) {
+    newColumn({ id, name, color } = {}) {
+        if (!color) {
+            const { defaultColors } = this
+            const nColumns = this.columns.length
+            const colorIndex = (nColumns - 1) % defaultColors.length
+            
+            color = defaultColors[colorIndex]
+        }
+        
         return {
             id: id ?? generateId(),
             name: name ?? '',
+            color,
             isNew: id == null
         }
     }
@@ -64,9 +77,11 @@ export class BoardFormDialog extends Dialog {
         const formData = new FormData(e.target)
         const name = formData.get('name')
         const columnsNames = formData.getAll('column')
+        const colors = formData.getAll('color')
 
         const columns = this.columns.map((column, i) => {
             column.name = columnsNames[i]
+            column.color = colors[i]
 
             return column
         })
@@ -86,7 +101,7 @@ export class BoardFormDialog extends Dialog {
             <label for="name">Board Name</label>
             <input type="text" name="name"
                 value="${this.name}"
-                placeholder="e.g. Web Design" required>
+                placeholder="${this.namePlaceholder}" required>
 
             <fieldset>
                 <label for="column">Board Columns</label>
@@ -110,7 +125,7 @@ export class BoardFormDialog extends Dialog {
     renderColumns() {
         const { columns } = this
 
-        return columns.map(({name, id}, i) => {
+        return columns.map(({name, color, id}, i) => {
             const removeBtn = () => columns.length < 2 ? '' : html`
             
             <button type="button" @click="${() => columns.splice(i, 1)}">
@@ -123,6 +138,7 @@ export class BoardFormDialog extends Dialog {
         
             <li>
                 <input type="text" name="column" value="${name}" required>
+                <input type="color" name="color" value="${color}" required>
                 
                 ${removeBtn}
             </li>
