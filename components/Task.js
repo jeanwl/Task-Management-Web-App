@@ -10,7 +10,8 @@ export class Task {
 
     data = reactive({
         subtasksIds: [],
-        description: ''
+        description: '',
+        dragging: false
     })
 
     constructor({ id, title, description, isNew, column }) {
@@ -139,13 +140,40 @@ export class Task {
         localStorage.removeItem(this.storageKey)
     }
 
+    onDragStart() {
+        this.data.dragging = true
+        this.column.draggedTaskId = this.id
+    }
+
+    onDragOver(e) {
+        e.preventDefault()
+
+        if (this.column.draggedTaskId == this.id) return
+        
+        this.column.dropTask(this.id)
+    }
+
+    onDragEnd() {
+        this.data.dragging = false
+    }
+
+    onDrop() {
+        this.data.dragging = false
+    }
+
     render() {
         const { data } = this
         const { subtasksIds } = data
 
         return html`
         
-        <li class="task" @click="${() => this.taskDialog.show(this)}"
+        <li class="task" data-dragging="${() => data.dragging}"
+            draggable="true"
+            @dragstart="${e => this.onDragStart(e)}"
+            @dragover="${e => this.onDragOver(e)}"
+            @dragend="${e => this.onDragEnd(e)}"
+            @drop="${e => this.onDrop(e)}"
+            @click="${() => this.taskDialog.show(this)}"
             @mousedown="${e => e.stopPropagation()}">
             
             <h4 class="task__title | title title--m">
