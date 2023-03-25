@@ -167,6 +167,7 @@ export class Task {
 
         return html`
         
+<<<<<<< HEAD
         <li>
             <div class="task" data-dragging="${() => data.dragging}"
                 draggable="true"
@@ -176,6 +177,16 @@ export class Task {
                 @drop="${e => this.onDrop(e)}"
                 @click="${() => this.taskDialog.show(this)}"
                 @mousedown="${e => e.stopPropagation()}">
+=======
+        <li class="task" data-dragging="${() => data.dragging}"
+            draggable="true"
+            @dragstart="${e => this.onDragStart(e)}"
+            @dragover="${e => this.onDragOver(e)}"
+            @dragend="${e => this.onDragEnd(e)}"
+            @drop="${e => this.onDrop(e)}"
+            @click="${() => this.taskDialog.show(this)}"
+            @mousedown="${e => e.stopPropagation()}">
+>>>>>>> bc50c7cd89f9dd9644fd8c457df96cf75095c3e0
             
                 <h4 class="task__title | title title--m">
                     ${() => data.title}
