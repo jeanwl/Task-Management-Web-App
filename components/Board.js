@@ -209,11 +209,11 @@ export class Board {
                 ${() => this.dropdown.render()}
             </header>
 
-            <ul class="board__content" id="${this.elId}"
+            <section class="board__content" id="${this.elId}"
                 @mousedown="${e => this.onMousedown(e)}">
                 
                 ${() => this.renderColumns()}
-            </ul>
+            </section>
 
             ${() => this.boardFormDialog.render()}
             ${() => this.confirmDialog.render()}
@@ -244,15 +244,17 @@ export class Board {
 
         return html`
         
-        ${() => columns.map(column => column.render())}
+        <ul class="board__columns">
+            ${() => columns.map(column => column.render())}
 
-        <li class="column column--new">
-            <button class="column__new-btn | title title--m"
-                @click="${() => this.columnFormDialog.show()}">
-                
-                + New Column
-            </button>
-        </li>
+            <li class="column column--new">
+                <button class="column__new-btn | title title--m"
+                    @click="${() => this.columnFormDialog.show()}">
+                    
+                    + New Column
+                </button>
+            </li>
+        </ul>
 
         `
     }

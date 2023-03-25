@@ -271,13 +271,9 @@
 
 .board__content {
     position: relative;
-    display: flex;
-    gap: 24px;
     height: calc(100% - 97px);
-    padding: 0 24px 24px;
     margin-top: 97px;
     overflow: auto;
-    box-sizing: border-box;
     user-select: none;
 }
 :not([data-is-dark]) .board__content {
@@ -285,6 +281,13 @@
 }
 [data-is-dark] .board__content {
     background-color: var(--deep-blue);
+}
+
+.board__columns {
+    display: flex;
+    gap: 24px;
+    width: fit-content;
+    padding: 0 24px 24px;
 }
 
 .column {
@@ -364,6 +367,14 @@
     border-radius: 8px;
     cursor: pointer;
     box-shadow: 0 4px 6px var(--shadow);
+
+    transition: opacity .2s;
+}
+.task[data-dragging] {
+    opacity: 0.5;
+}
+.task[data-dragging] :is(.task__title, .task__completed) {
+    pointer-events: none;
 }
 
 .task__title {
@@ -389,14 +400,19 @@
 }
 
 .dialog__content {
+    position: absolute;
+    inset: 0;
     display: flex;
     flex-direction: column;
     gap: 24px;
-    width: 480px;
+    max-height: 100%;
+    height: fit-content;
+    margin-block: auto;
     padding: 32px;
     border-radius: 6px;
     background-color: white;
     box-sizing: border-box;
+    overflow: auto;
 
     animation: scale .2s;
     will-change: scale;
@@ -482,10 +498,6 @@
     position: absolute;
     top: 32px;
     right: 32px;
-}
-
-.dialog__content .dropdown__menu {
-    right: -72px;
 }
 
 .task-dialog__title {

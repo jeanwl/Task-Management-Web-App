@@ -105,6 +105,25 @@ export class Column {
         this.data.tasksIds.push(id)
     }
 
+    moveTask({ task, to }) {
+        // not used yet?
+        const { tasksIds } = this.data
+        const id = task.id
+
+        tasksIds.splice(tasksIds.indexOf(id), 1)
+        tasksIds.splice(to, 0, id)
+    }
+
+    dropTask(toId) {
+        const { tasksIds } = this.data
+        const id = this.draggedTaskId
+        const indexFrom = tasksIds.indexOf(id)
+        const indexTo = tasksIds.indexOf(toId)
+
+        tasksIds.splice(indexFrom, 1)
+        tasksIds.splice(indexTo, 0, id)
+    }
+
     removeSave() {
         for (const task of Object.values(this.tasks)) {
             task.removeSave()

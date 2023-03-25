@@ -32,7 +32,8 @@ export class Dialog {
             @close="${() => this.onClose()}">
             
             <div class="dialog__content"
-                @pointerdown="${e => e.stopPropagation()}">
+                @pointerdown="${e => e.stopPropagation()}"
+                @click="${e => e.stopPropagation()}">
                 
                 ${this.renderContent()}
             </div>
