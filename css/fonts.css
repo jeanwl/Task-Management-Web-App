@@ -2,12 +2,12 @@
     font-family: 'PlusJakartaSans';
     font-style: normal;
     font-weight: 500;
-    src: url('../fonts/PlusJakartaSans-Medium.woff2') format('woff2');
+    src: url(../fonts/PlusJakartaSans-Medium.woff2) format('woff2');
 }
 
 @font-face {
     font-family: 'PlusJakartaSans';
     font-style: normal;
     font-weight: 700;
-    src: url('../fonts/PlusJakartaSans-Bold.woff2') format('woff2');
+    src: url(../fonts/PlusJakartaSans-Bold.woff2) format('woff2');
 }

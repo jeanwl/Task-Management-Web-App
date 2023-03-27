@@ -1,4 +1,10 @@
 @import url(fonts.css);
 @import url(general.css);
-@import url(components.css);
-@import url(layout.css);
+@import url(base.css);
+
+@import url(components/app.css);
+@import url(components/board.css);
+@import url(components/column.css);
+@import url(components/task.css);
+@import url(components/subtask.css);
+@import url(components/dialog.css);

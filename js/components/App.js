@@ -1,7 +1,7 @@
 import { Board } from './Board.js'
 import { BoardFormDialog } from './dialogs/BoardFormDialog.js'
-import { loadDataSample } from '../js/loadDataSample.js'
-import { reactive, html } from '../js/arrow.js'
+import { loadDataSample } from '../loadDataSample.js'
+import { reactive, html } from '../arrow.js'
 
 export class App {
     boards = {}

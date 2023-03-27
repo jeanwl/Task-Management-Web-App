@@ -1,6 +1,6 @@
 import { Subtask } from './Subtask.js'
 import { TaskDialog } from './dialogs/TaskDialog.js'
-import { reactive, html } from '../js/arrow.js'
+import { reactive, html } from '../arrow.js'
 
 export class Task {
     subtasks = {}

@@ -1,0 +1,35 @@
+.tasks {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.task {
+    padding: 23px 16px;
+    background-color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px var(--shadow);
+
+    transition: opacity .2s;
+}
+.task[data-dragging] {
+    opacity: 0.5;
+}
+.task[data-dragging] :is(.task__title, .task__completed) {
+    pointer-events: none;
+}
+
+.task__title {
+    margin-bottom: 8px;
+    overflow-wrap: break-word;
+
+    transition: color .2s;
+}
+.task:hover .task__title {
+    color: var(--purple);
+}
+
+.task__completed {
+    color: var(--gray);
+}

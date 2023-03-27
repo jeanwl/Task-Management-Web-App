@@ -1,5 +1,5 @@
 import { Dialog } from './Dialog.js'
-import { html } from '../../js/arrow.js'
+import { html } from '../../arrow.js'
 
 export class ConfirmDialog extends Dialog {
     constructor({ board, column, task }) {

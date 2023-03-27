@@ -1,8 +1,8 @@
 import { Dialog } from './Dialog.js'
 import { ConfirmDialog } from './ConfirmDialog.js'
 import { Dropdown } from '../Dropdown.js'
-import { html } from '../../js/arrow.js'
-import { generateId } from '../../js/generateId.js'
+import { html } from '../../arrow.js'
+import { generateId } from '../../generateId.js'
 
 export class ColumnFormDialog extends Dialog {
     constructor({ board, column }) {

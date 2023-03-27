@@ -1,6 +1,6 @@
 import { Task } from './Task.js'
 import { ColumnFormDialog } from './dialogs/ColumnFormDialog.js'
-import { reactive, html } from '../js/arrow.js'
+import { reactive, html } from '../arrow.js'
 
 export class Column {
     tasks = {}

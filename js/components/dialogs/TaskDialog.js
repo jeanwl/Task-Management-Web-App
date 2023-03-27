@@ -2,8 +2,8 @@ import { Dialog } from './Dialog.js'
 import { TaskFormDialog } from './TaskFormDialog.js'
 import { ConfirmDialog } from './ConfirmDialog.js'
 import { Dropdown } from '../Dropdown.js'
-import { html } from '../../js/arrow.js'
-import { generateId } from '../../js/generateId.js'
+import { html } from '../../arrow.js'
+import { generateId } from '../../generateId.js'
 
 export class TaskDialog extends Dialog {
     selectElId = `select_${generateId()}`

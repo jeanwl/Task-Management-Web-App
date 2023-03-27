@@ -1,4 +1,4 @@
-import { reactive, html } from '../js/arrow.js'
+import { reactive, html } from '../arrow.js'
 
 export class Subtask {
     keysToSave = ['title', 'isCompleted']

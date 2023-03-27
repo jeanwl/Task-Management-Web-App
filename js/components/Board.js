@@ -4,7 +4,7 @@ import { ConfirmDialog } from './dialogs/ConfirmDialog.js'
 import { TaskFormDialog } from './dialogs/TaskFormDialog.js'
 import { ColumnFormDialog } from './dialogs/ColumnFormDialog.js'
 import { Dropdown } from './Dropdown.js'
-import { reactive, html } from '../js/arrow.js'
+import { reactive, html } from '../arrow.js'
 
 export class Board {
     columns = {}

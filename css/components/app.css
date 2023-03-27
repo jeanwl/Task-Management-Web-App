@@ -1,0 +1,226 @@
+.app {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    
+    --header-width: 300px;
+    --sidebar-width: 300px;
+    --sidebar-item-width: 276px;
+    --sidebar-transition: .4s;
+}
+.app:not([data-is-dark]) {
+    color-scheme: light;
+}
+.app[data-is-dark] {
+    color-scheme: dark;
+}
+.app[data-sidebar-closed] {
+    --header-width: 210px;
+}
+@media (max-width: 1023.98px) {
+    .app {
+        --header-width: 260px;
+        --sidebar-width: 260px;
+        --sidebar-item-width: 240px;
+    }
+    .app[data-sidebar-closed] {
+        --header-width: 200px;
+    }
+}
+
+.app__header {
+    box-sizing: border-box;
+    position: absolute;
+    display: flex;
+    align-items: center;
+    width: var(--header-width);
+    height: 97px;
+    border-right: 1px solid var(--light-gray);
+    border-bottom: 1px solid var(--light-gray);
+    background-color: white;
+
+    transition: width var(--sidebar-transition);
+}
+
+.kanban-logo {
+    position: relative;
+    width: 153px;
+    height: 26px;
+    margin-left: 34px;
+    background-image: url(../../images/logo-dark.svg), url(../../images/logo-light.svg);
+    z-index: 2;
+
+    transition: translate var(--sidebar-transition);
+}
+.app[data-is-dark] .kanban-logo {
+    background-size: 0, 100%;
+}
+.app[data-sidebar-closed] .kanban-logo {
+    translate: -10px;
+}
+
+.app__content {
+    display: flex;
+    height: 100%;
+}
+
+.sidebar {
+    position: relative;
+    min-width: var(--sidebar-width);
+    margin-top: 96px;
+    z-index: 1;
+    
+    transition: min-width var(--sidebar-transition);
+}
+.sidebar[aria-hidden] {
+    min-width: 0;
+}
+
+.sidebar__wrapper {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    width: var(--sidebar-width);
+    height: 100%;
+    padding-bottom: 32px;
+    border-right: 1px solid var(--light-gray);
+    background-color: white;
+    box-sizing: border-box;
+}
+
+.sidebar__title {
+    margin: 15px 0 0 32px;
+}
+
+.sidebar__boards {
+    flex-grow: 1;
+    margin-block: 20px;
+    overflow: auto;
+}
+
+.sidebar__board,
+.sidebar__new-board-btn,
+.sidebar__hide-btn {
+    display: flex;
+    align-items: center;
+    width: var(--sidebar-item-width);
+    min-height: 48px;
+    border-radius: 0 24px 24px 0;
+    color: var(--gray);
+
+    transition: background-color .2s;
+}
+
+.sidebar__board:hover,
+.sidebar__new-board-btn:hover,
+.sidebar__hide-btn:hover {
+    background-color: var(--light-gray);
+}
+.sidebar__board[aria-current] {
+    background-color: var(--purple);
+    color: white;
+}
+.sidebar__board button {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: inherit;
+    padding-left: 32px;
+}
+
+.sidebar__new-board-btn {
+    padding-left: 32px;
+    color: var(--purple);
+}
+
+@media (max-width: 1023.98px) {
+    .sidebar__title {
+        margin-left: 24px;
+    }
+
+    .sidebar__board button,
+    .sidebar__new-board-btn {
+        padding-left: 24px;
+    }
+}
+
+.board-icon {
+    width: 16px;
+    height: 16px;
+    margin-right: 16px;
+    fill: currentColor;
+}
+
+.sidebar__theme-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 48px;
+    margin-inline: 24px;
+    background-color: var(--lightest-blue);
+    border-radius: 6px;
+}
+.sidebar__theme-btn:before {
+    content: url(../../images/icon-light-theme.svg);
+    margin-right: 24px;
+}
+.sidebar__theme-btn:after {
+    content: url(../../images/icon-dark-theme.svg);
+    margin-left: 24px;
+}
+
+.theme-btn__toggler {
+    position: relative;
+    width: 40px;
+    height: 20px;
+    background-color: var(--purple);
+    border-radius: 12px;
+    transition: background-color .2s;
+}
+.theme-btn__toggler:before {
+    content: '';
+    left: 3px;
+    top: 3px;
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    background-color: white;
+    border-radius: 50%;
+    
+    transition: translate .4s;
+}
+.sidebar__theme-btn:hover .theme-btn__toggler {
+    background-color: var(--light-purple);
+}
+.sidebar__theme-btn[aria-pressed] .theme-btn__toggler:before {
+    translate: 20px;
+}
+
+.sidebar__hide-btn {
+    padding-left: 24px;
+    margin-top: 8px;
+    color: var(--gray);
+}
+.sidebar__hide-btn:before {
+    content: url(../../images/icon-hide-sidebar.svg);
+    margin-right: 15px;
+}
+
+.show-sidebar-btn {
+    position: absolute;
+    bottom: 32px;
+    width: 56px;
+    height: 48px;
+    background: var(--purple) url(../../images/icon-show-sidebar.svg) no-repeat center;
+    border-radius: 0 24px 24px 0;
+
+    transition: background-color .2s, opacity var(--sidebar-transition);
+}
+.show-sidebar-btn:hover {
+    background-color: var(--light-purple);
+}
+.app:not([data-sidebar-closed]) .show-sidebar-btn {
+    opacity: 0;
+}

@@ -1,5 +1,5 @@
-import { reactive, html } from '../js/arrow.js'
-import { generateId } from '../js/generateId.js'
+import { reactive, html } from '../arrow.js'
+import { generateId } from '../generateId.js'
 
 export class Dropdown {
     elId = `dropdown_${generateId()}`
