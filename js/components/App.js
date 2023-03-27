@@ -102,6 +102,7 @@ export class App {
             <header class="app__header">
                 <h1 class="kanban-logo">
                     <span class="visually-hidden">Kanban</span>
+                    <svg class="logo"><use href="#logo-full-icon"></svg>
                 </h1>
             </header>
 
@@ -112,6 +113,7 @@ export class App {
                 <button class="show-sidebar-btn"
                     @click="${() => data.hideSidebar = false}">
                     
+                    <svg class="show-icon"><use href="#show-icon"></svg>
                     <span class="visually-hidden">Show Sidebar</span>
                 </button>
             </main>
@@ -154,14 +156,17 @@ export class App {
                     aria-pressed="${() => data.isDark}"
                     @click="${() => data.isDark = !data.isDark}">
                     
+                    <svg class="light-icon"><use href="#light-icon"></svg>
                     <span class="theme-btn__toggler">
                         <span class="visually-hidden">Toggle theme</span>
                     </span>
+                    <svg class="dark-icon"><use href="#dark-icon"></svg>
                 </button>
 
                 <button class="sidebar__hide-btn | title title--m"
                     @click="${() => data.hideSidebar = true}">
                     
+                    <svg class="hide-icon"><use href="#hide-icon"></svg>
                     Hide Sidebar
                 </button>
             </div>

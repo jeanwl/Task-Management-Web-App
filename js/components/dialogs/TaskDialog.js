@@ -115,7 +115,7 @@ export class TaskDialog extends Dialog {
     renderColumnSelect() {
         return this.columnsOptions.length > 1 ? html`
         
-        <div class="task-column">
+        <div class="dialog__select">
             <label class="text text--m" for="column">
                 Current Column
             </label>
@@ -124,6 +124,7 @@ export class TaskDialog extends Dialog {
                 
                 ${this.renderColumnsOptions()}
             </select>
+            <svg class="chevron-icon"><use href="#chevron-icon"></svg>
         </div>
         
         ` : ''

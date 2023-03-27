@@ -58,6 +58,7 @@ export class Dropdown {
                 aria-expanded="${() => this.data.isOpen}"
                 @click="${() => this.toggle()}">
                 
+                <svg class="menu-icon"><use href="#menu-icon"></svg>
                 <span class="visually-hidden">Toggle menu</span>
             </button>
             

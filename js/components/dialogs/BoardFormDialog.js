@@ -130,6 +130,7 @@ export class BoardFormDialog extends Dialog {
             
             <button type="button" @click="${() => columns.splice(i, 1)}">
                 <span class="visually-hidden">Remove Column</span>
+                <svg class="cross-icon"><use href="#cross-icon"></svg>
             </button>
     
             `

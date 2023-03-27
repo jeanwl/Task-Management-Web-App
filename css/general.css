@@ -31,6 +31,11 @@ dialog {
     cursor: initial;
 }
 
+svg {
+    fill: currentColor;
+    pointer-events: none;
+}
+
 html {
     --purple: hsl(242, 48%, 58%);
     --light-purple: hsl(243, 100%, 82%);

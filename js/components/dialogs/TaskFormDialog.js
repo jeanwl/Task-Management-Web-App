@@ -135,10 +135,13 @@ export class TaskFormDialog extends Dialog {
                 </button>
             </fieldset>
 
-            <label for="column">Column</label>
-            <select name="column">
-                ${this.renderColumnsOptions()}
-            </select>
+            <div class="dialog__select">
+                <label for="column">Column</label>
+                <select name="column">
+                    ${this.renderColumnsOptions()}
+                </select>
+                <svg class="chevron-icon"><use href="#chevron-icon"></svg>
+            </div>
             
             <button type="submit">
                 ${this.btnText}

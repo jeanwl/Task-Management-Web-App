@@ -70,19 +70,25 @@
 
 .dropdown {
     position: relative;
+    color: var(--gray);
 }
 
 .dropdown__toggle {
+    display: grid;
+    place-items: center;
     width: 48px;
     height: 48px;
     border-radius: 50%;
-    background: url(../images/icon-vertical-ellipsis.svg) no-repeat center;
 
     transition: background-color .2s;
 }
 .dropdown__toggle:hover,
 .dropdown__toggle[aria-expanded] {
     background-color: var(--lightest-blue);
+}
+.menu-icon {
+    width: 5px;
+    height: 20px;
 }
 
 .dropdown__menu {
@@ -99,9 +105,6 @@
     animation-duration: .2s;
 }
 
-.dropdown__item {
-    color: var(--gray);
-}
 .dropdown__item--danger {
     color: var(--red);
 }

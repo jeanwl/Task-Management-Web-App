@@ -37,7 +37,6 @@
     padding: 8px 16px;
     border-radius: 4px;
     border: 1px solid var(--input-border);
-    background: url(../../images/icon-chevron-down.svg) no-repeat;
     background-position: calc(100% - 16px) center;
     color: black;
     cursor: pointer;
@@ -46,6 +45,19 @@
 }
 .dialog__content select:hover {
     border-color: var(--purple);
+}
+
+.dialog__select {
+    position: relative;
+}
+
+.chevron-icon {
+    position: absolute;
+    right: 16px;
+    bottom: 14px;
+    width: 11px;
+    height: 8px;
+    color: var(--purple);
 }
 
 .dialog__content option {
@@ -73,6 +85,12 @@
 .dialog-delete__menu {
     display: flex;
     gap: 16px;
+}
+
+.cross-icon {
+    width: 15px;
+    height: 15px;
+    color: var(--gray);
 }
 
 form {

@@ -74,6 +74,7 @@ export class Subtask {
                 checked="${() => data.isCompleted}"
                 @change="${() => data.isCompleted = !data.isCompleted}">
             
+            <svg class="check-icon"><use href="#check-icon"></svg>
             <label class="subtask__label | text text--m"
                 for="${elId}">
                 

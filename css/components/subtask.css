@@ -29,7 +29,15 @@
     border-radius: 2px;
 }
 .subtask__checkbox:checked {
-    background: var(--purple) url(../../images/icon-check.svg) no-repeat center;
+    background-color: var(--purple);
+}
+.check-icon {
+    position: absolute;
+    inset: 0 auto 0 14.5px;
+    width: 10px;
+    height: 8px;
+    margin: auto;
+    color: white;
 }
 
 .subtask__label {
