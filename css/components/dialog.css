@@ -51,7 +51,7 @@
     position: relative;
 }
 
-.chevron-icon {
+.dialog__select .chevron-icon {
     position: absolute;
     right: 16px;
     bottom: 14px;

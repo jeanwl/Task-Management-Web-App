@@ -68,8 +68,6 @@ export class ColumnFormDialog extends Dialog {
                 ${this.title}
             </h2>
 
-            ${this.isEdit ? () => this.dropdown.render() : ''}
-
             <label for="name">Column Name</label>
             <input type="text" name="name"
                 value="${this.name}"
@@ -82,6 +80,8 @@ export class ColumnFormDialog extends Dialog {
             <button type="submit">
                 ${this.btnText}
             </button>
+
+            ${this.isEdit ? () => this.dropdown.render() : ''}
         </form>
         
         ${this.isEdit ? () => this.confirmDialog.render() : ''}

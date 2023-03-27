@@ -11,3 +11,10 @@
     font-weight: 700;
     src: url(../fonts/PlusJakartaSans-Bold.woff2) format('woff2');
 }
+
+@font-face {
+    font-family: 'PlusJakartaSans';
+    font-style: normal;
+    font-weight: 800;
+    src: url(../fonts/PlusJakartaSans-ExtraBold.woff2) format('woff2');
+}

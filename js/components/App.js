@@ -101,8 +101,8 @@ export class App {
 
             <header class="app__header">
                 <h1 class="kanban-logo">
-                    <span class="visually-hidden">Kanban</span>
-                    <svg class="logo"><use href="#logo-full-icon"></svg>
+                    <svg class="logo"><use href="#logo-icon"></svg>
+                    <span class="kanban-text">kanban</span>
                 </h1>
             </header>
 

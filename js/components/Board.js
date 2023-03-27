@@ -200,9 +200,12 @@ export class Board {
         
         <section class="board">
             <header class="board__header">
-                <h2 class="title title--xl">
-                    ${() => this.data.name}
-                </h2>
+                <button class="board__title-btn">
+                    <h2 class="board__title | title title--xl">
+                        ${() => this.data.name}
+                    </h2>
+                    <svg class="chevron-icon"><use href="#chevron-icon"></svg>
+                </button>
                 
                 ${newTaskBtn}
                 
