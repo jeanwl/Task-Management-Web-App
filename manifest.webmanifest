@@ -1,0 +1,18 @@
+{
+    "short_name": "Kanban",
+    "name": "Kanban Task Management Web App",
+    "icons": [
+        {
+            "src": "/favicon.svg",
+            "sizes": "any"
+        },
+        {
+            "src": "/favicon.ico",
+            "sizes": "16x16 32x32 48x48"
+        }
+    ],
+    "start_url": "/Task-Management-Web-App/",
+    "background_color": "#ffffff",
+    "display": "fullscreen",
+    "description": "Kanban web app simplifies task management"
+}
