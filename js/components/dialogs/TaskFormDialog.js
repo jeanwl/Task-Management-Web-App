@@ -110,40 +110,53 @@ export class TaskFormDialog extends Dialog {
         return html`
         
         <form method="dialog" @submit="${(e) => this.onSubmit(e)}">
-            <h2 class="">
+            <h2 class="title title--l">
                 ${this.title}
             </h2>
 
-            <label for="title">Title</label>
-            <input type="text" name="title" required
-                value="${this.taskTitle}"
-                placeholder="${this.titlePlaceholder}">
+            <div>
+                <label for="title" class="text text--m">
+                    Title
+                </label>
+                <input type="text" name="title" required
+                    value="${this.taskTitle}"
+                    placeholder="${this.titlePlaceholder}">
+            </div>
 
-            <label for="description">Description</label>
-            <textarea name="description"
-                placeholder="${this.descriptionPlaceholder}"
-                >${this.description}</textarea>
+            <div>
+                <label for="description" class="text text--m">
+                    Description
+                </label>
+                <textarea name="description"
+                    placeholder="${this.descriptionPlaceholder}"
+                    >${this.description}</textarea>
+            </div>
 
             <fieldset>
-                <label for="subtask">Subtasks</label>
+                <label for="subtask" class="text text--m">
+                    Subtasks
+                </label>
+                
                 ${() => this.renderSubtasks()}
 
-                <button type="button"
+                <button type="button" class="btn btn--small btn--secondary"
                     @click="${() => subtasks.push(this.newSubtask())}">
                     
-                    Add New Subtask
+                    + Add New Subtask
                 </button>
             </fieldset>
 
             <div class="dialog__select">
-                <label for="column">Column</label>
+                <label for="column" class="text text--m">
+                    Column
+                </label>
                 <select name="column">
                     ${this.renderColumnsOptions()}
                 </select>
                 <svg class="chevron-icon"><use href="#chevron-icon"></svg>
             </div>
             
-            <button type="submit">
+            <button type="submit" class="btn btn--small btn--primary">
                 ${this.btnText}
             </button>
         </form>
@@ -158,12 +171,17 @@ export class TaskFormDialog extends Dialog {
         return subtasks.map(({ title, id }, i) => {
             return html`
         
-            <li>
+            <li class="dialog__item dialog__item--subtask">
                 <input type="text" name="subtask" value="${title}" required
                     placeholder="${() => placeholders?.[i] ?? false}">
+
+                <div class="dialog__drag">
+                    <svg class="draggable-icon"><use href="#draggable-icon"></svg>
+                </div>
                 
                 <button type="button" @click="${() => subtasks.splice(i, 1)}">
                     <span class="visually-hidden">Remove Subtask</span>
+                    <svg class="cross-icon"><use href="#cross-icon"></svg>
                 </button>
             </li>
 

@@ -43,7 +43,7 @@ export class ColumnFormDialog extends Dialog {
         else {
             const { defaultColors } = this
             const nColumns = this.board.getColumns().length || 1
-            const colorIndex = (nColumns - 1) % defaultColors.length
+            const colorIndex = nColumns % defaultColors.length
             
             this.color = defaultColors[colorIndex]
         }
@@ -68,16 +68,15 @@ export class ColumnFormDialog extends Dialog {
                 ${this.title}
             </h2>
 
-            <label for="name">Column Name</label>
-            <input type="text" name="name"
-                value="${this.name}"
-                placeholder="${this.namePlaceholder}" required>
+            <div class="dialog__item dialog__item--single">
+                <input type="color" name="color"
+                    value="${this.color}" required>
+                <input type="text" name="name"
+                    value="${this.name}"
+                    placeholder="${this.namePlaceholder}" required>
+            </div>
             
-            <label for="name">Circle color</label>
-            <input type="color" name="color"
-                value="${this.color}" required>
-            
-            <button type="submit">
+            <button type="submit" class="btn btn--small btn--primary">
                 ${this.btnText}
             </button>
 

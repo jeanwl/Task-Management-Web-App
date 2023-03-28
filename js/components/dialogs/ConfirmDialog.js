@@ -47,12 +47,14 @@ export class ConfirmDialog extends Dialog {
 
         <menu class="dialog-delete__menu">
             <li>
-                <button @click="${() => this.confirm()}">
+                <button class="btn btn--small btn--destructive"
+                    @click="${() => this.confirm()}">
                     Delete
                 </button>
             </li>
             <li>
-                <button @click="${() => this.close()}">
+                <button class="btn btn--small btn--secondary"
+                    @click="${() => this.close()}">
                     Cancel
                 </button>
             </li>

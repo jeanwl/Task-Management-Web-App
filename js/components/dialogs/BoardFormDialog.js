@@ -56,7 +56,7 @@ export class BoardFormDialog extends Dialog {
         if (!color) {
             const { defaultColors } = this
             const nColumns = this.columns.length
-            const colorIndex = (nColumns - 1) % defaultColors.length
+            const colorIndex = nColumns % defaultColors.length
             
             color = defaultColors[colorIndex]
         }
@@ -98,23 +98,25 @@ export class BoardFormDialog extends Dialog {
                 ${this.title}
             </h2>
 
-            <label for="name">Board Name</label>
-            <input type="text" name="name"
-                value="${this.name}"
-                placeholder="${this.namePlaceholder}" required>
+            <div>
+                <label for="name" class="text text--m">Name</label>
+                <input type="text" name="name"
+                    value="${this.name}"
+                    placeholder="${this.namePlaceholder}" required>
+            </div>
 
             <fieldset>
-                <label for="column">Board Columns</label>
+                <label for="column" class="text text--m">Columns</label>
                 ${() => this.renderColumns()}
 
-                <button type="button"
+                <button type="button" class="btn btn--small btn--secondary"
                     @click="${() => this.columns.push(this.newColumn())}">
                     
-                    Add New Column
+                    + Add New Column
                 </button>
             </fieldset>
             
-            <button type="submit">
+            <button type="submit" class="btn btn--small btn--primary">
                 ${this.btnText}
             </button>
         </form>
@@ -126,22 +128,20 @@ export class BoardFormDialog extends Dialog {
         const { columns } = this
 
         return columns.map(({name, color, id}, i) => {
-            const removeBtn = () => columns.length < 2 ? '' : html`
-            
-            <button type="button" @click="${() => columns.splice(i, 1)}">
-                <span class="visually-hidden">Remove Column</span>
-                <svg class="cross-icon"><use href="#cross-icon"></svg>
-            </button>
-    
-            `
-            
             return html`
         
-            <li>
-                <input type="text" name="column" value="${name}" required>
+            <li class="dialog__item">
                 <input type="color" name="color" value="${color}" required>
+                <input type="text" name="column" value="${name}" required>
+
+                <div class="dialog__drag">
+                    <svg class="draggable-icon"><use href="#draggable-icon"></svg>
+                </div>
                 
-                ${removeBtn}
+                <button type="button" @click="${() => columns.splice(i, 1)}">
+                    <span class="visually-hidden">Remove Column</span>
+                    <svg class="cross-icon"><use href="#cross-icon"></svg>
+                </button>
             </li>
 
             `.key(id)

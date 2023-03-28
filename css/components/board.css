@@ -50,9 +50,11 @@
 }
 @media (max-width: 767.98px) {
     .board__title-btn {
+        flex-grow: 1;
         display: flex;
         align-items: center;
         gap: 8px;
+        height: var(--header-height);
     }
 }
 
@@ -63,7 +65,7 @@
 }
 
 @media (min-width: 768px) {
-    .chevron-icon {
+    .board__header .chevron-icon {
         display: none;
     }
 }
@@ -121,13 +123,13 @@
         background-color: black;
         opacity: 0;
         pointer-events: none;
+        
+        transition: opacity var(--sidebar-transition);
     }
 
     .app[data-altmenu-open] .board__content:after {
         opacity: 0.5;
         pointer-events: all;
-        
-        transition: opacity var(--sidebar-transition);
     }
 }
 
