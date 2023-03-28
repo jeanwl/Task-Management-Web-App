@@ -9,7 +9,7 @@
 .board__new {
     position: absolute;
     inset: 0;
-    height: 100px;
+    height: fit-content;
     max-width: calc(100% - 40px);
     margin: auto;
     text-align: center;

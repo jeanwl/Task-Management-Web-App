@@ -26,6 +26,8 @@
     import { App } from './js/components/App.js'
 
     new App().render()(document.body)
+
+    if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/service-worker.js') }
   </script>
 
   <svg style="display: none">

@@ -172,16 +172,7 @@ export class App {
                     </li>
                 </menu>
 
-                <button class="sidebar__theme-btn"
-                    aria-pressed="${() => data.isDark}"
-                    @click="${() => data.isDark = !data.isDark}">
-                    
-                    <svg class="light-icon"><use href="#light-icon"></svg>
-                    <span class="theme-btn__toggler">
-                        <span class="visually-hidden">Toggle theme</span>
-                    </span>
-                    <svg class="dark-icon"><use href="#dark-icon"></svg>
-                </button>
+                ${this.renderThemeToggler()}
 
                 <button class="sidebar__hide-btn | title title--m"
                     @click="${() => data.hideSidebar = true}">
@@ -211,6 +202,8 @@ export class App {
                     + Create New Board
                 </button>
             </div>
+
+            ${this.renderThemeToggler()}
         </section>
 
         `
@@ -236,5 +229,24 @@ export class App {
 
             `
         })
+    }
+
+    renderThemeToggler() {
+        const { data } = this
+        
+        return html`
+
+        <button class="sidebar__theme-btn"
+            aria-pressed="${() => data.isDark}"
+            @click="${() => data.isDark = !data.isDark}">
+            
+            <svg class="light-icon"><use href="#light-icon"></svg>
+            <span class="theme-btn__toggler">
+                <span class="visually-hidden">Toggle theme</span>
+            </span>
+            <svg class="dark-icon"><use href="#dark-icon"></svg>
+        </button>
+        
+        `
     }
 }
