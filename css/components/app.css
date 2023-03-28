@@ -3,10 +3,7 @@
     width: 100%;
     height: 100%;
     
-    --header-width: 300px;
     --header-height: 97px;
-    --sidebar-width: 300px;
-    --sidebar-item-width: 276px;
     --sidebar-transition: .4s;
 }
 .app:not([data-is-dark]) {
@@ -15,10 +12,18 @@
 .app[data-is-dark] {
     color-scheme: dark;
 }
-.app[data-sidebar-closed] {
-    --header-width: 210px;
+@media (min-width: 1024px) {
+    .app {
+        --header-width: 300px;
+        --sidebar-width: 300px;
+        --sidebar-item-width: 276px;
+    }
+
+    .app[data-sidebar-closed] {
+        --header-width: 210px;
+    }
 }
-@media (max-width: 1023.98px) {
+@media (min-width: 768px) and (max-width: 1023.98px) {
     .app {
         --header-width: 260px;
         --sidebar-width: 260px;
@@ -65,8 +70,10 @@
 .app[data-is-dark] .kanban-logo {
     color: white;
 }
-.app[data-sidebar-closed] .kanban-logo {
-    translate: -10px;
+@media (min-width: 768px) {
+    .app[data-sidebar-closed] .kanban-logo {
+        translate: -10px;
+    }
 }
 @media (min-width: 768px) {
     .kanban-logo {
@@ -114,12 +121,26 @@
     
     transition: min-width var(--sidebar-transition);
 }
-.sidebar[aria-hidden] {
-    min-width: 0;
+@media (min-width: 768px) {
+    .sidebar[aria-hidden] {
+        min-width: 0;
+    }
 }
 @media (max-width: 767.98px) {
     .sidebar {
-        display: none;
+        position: absolute;
+        inset: calc(16px + var(--header-height)) 0 50px 0;
+        width: clamp(264px, calc(100% - 100px), 500px);
+        margin: auto;
+    }
+    .sidebar:not([aria-hidden]) {
+        transition-property: opacity, translate;
+        transition-duration: var(--sidebar-transition);
+    }
+    .sidebar[aria-hidden] {
+        opacity: 0;
+        translate: 0 -10px;
+        pointer-events: none;
     }
 }
 
@@ -136,6 +157,16 @@
     background-color: white;
     box-sizing: border-box;
 }
+@media (max-width: 767.98px) {
+    .sidebar__wrapper {
+        width: 100%;
+        height: fit-content;
+        max-height: 100%;
+        padding-bottom: 16px;
+        border: unset;
+        border-radius: 8px;
+    }
+}
 
 .sidebar__title {
     margin: 15px 0 0 32px;
@@ -145,6 +176,11 @@
     flex-grow: 1;
     margin-block: 20px;
     overflow: auto;
+}
+@media (max-width: 767.98px) {
+    .sidebar__boards {
+        padding-right: 24px;
+    }
 }
 
 .sidebar__board,
@@ -180,6 +216,12 @@
 .sidebar__new-board-btn {
     padding-left: 32px;
     color: var(--purple);
+}
+
+@media (max-width: 767.98px) {
+    .sidebar__hide-btn {
+        display: none;
+    }
 }
 
 @media (max-width: 1023.98px) {
@@ -218,6 +260,12 @@
     width: 16px;
     height: 16px;
     margin-left: 24px;
+}
+
+@media (max-width: 767.98px) {
+    .sidebar__theme-btn {
+        margin-inline: 16px;
+    }
 }
 
 .theme-btn__toggler {
@@ -279,4 +327,9 @@
     height: 11px;
     margin-left: 18px;
     color: white;
+}
+@media (max-width: 767.98px) {
+    .show-sidebar-btn {
+        display: none;
+    }
 }

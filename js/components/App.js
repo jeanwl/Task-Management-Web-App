@@ -5,7 +5,6 @@ import { reactive, html } from '../arrow.js'
 
 export class App {
     boards = {}
-    maxBoards = 10
     storageKey = 'app'
     keysToSave = ['boardsIds', 'currentBoard', 'hideSidebar', 'isDark']
     
@@ -13,7 +12,9 @@ export class App {
 
     data = reactive({
         boardsIds: [],
-        hideSidebar: false
+        hideSidebar: false,
+        isAltMenuOpen: false,
+        width: window.innerWidth
     })
     
     constructor() {
@@ -27,10 +28,8 @@ export class App {
         for (const key of this.keysToSave) {
             data.$on(key, () => this.save())
         }
-    }
 
-    get isFull() {
-        this.data.boardsIds.length == this.maxBoards
+        addEventListener('resize', () => data.width = window.innerWidth)
     }
 
     load() {
@@ -91,13 +90,32 @@ export class App {
         delete boards[id]
     }
 
+    toggleAltMenu(e) {
+        const { data } = this
+       
+        if (data.width > 767.98) return
+
+        data.isAltMenuOpen = !data.isAltMenuOpen
+
+        e.stopPropagation()
+    }
+
+    closeAltMenu() {
+        const { data } = this
+       
+        if (data.width > 767.98) return
+
+        data.isAltMenuOpen = false
+    }
+
     render() {
         const { data } = this
         
         return html`
         
         <div class="app" data-is-dark="${() => data.isDark}"
-            data-sidebar-closed="${() => data.hideSidebar}">
+            data-sidebar-closed="${() => data.hideSidebar}"
+            data-altmenu-open="${() => data.isAltMenuOpen}">
 
             <header class="app__header">
                 <h1 class="kanban-logo">
@@ -127,20 +145,15 @@ export class App {
     renderSidebar() {
         const { data } = this
 
-        const newBoardBtn = () => this.isFull ? '' : html`
+        const hidden = () => (
+            data.width > 768
+                ? data.hideSidebar
+                : !data.isAltMenuOpen
+        )
         
-        <button class="sidebar__new-board-btn | title title--m"
-            @click="${() => this.boardFormDialog.show()}">
-            
-            <svg class="board-icon"><use href="#board-icon"></svg>
-            + Create New Board
-        </button>
-        
-        `
-
         return html`
             
-        <aside class="sidebar" aria-hidden="${() => data.hideSidebar}">
+        <aside class="sidebar" aria-hidden="${hidden}">
             <div class="sidebar__wrapper">
                 <h2 class="sidebar__title | title title--s">
                     ${() => `All boards (${data.boardsIds.length})`}
@@ -149,7 +162,14 @@ export class App {
                 <menu class="sidebar__boards">
                     ${() => this.renderBoardList()}
 
-                    <li>${newBoardBtn}</li>
+                    <li @click="${() => this.closeAltMenu()}">
+                        <button class="sidebar__new-board-btn | title title--m"
+                            @click="${() => this.boardFormDialog.show()}">
+                            
+                            <svg class="board-icon"><use href="#board-icon"></svg>
+                            + Create New Board
+                        </button>
+                    </li>
                 </menu>
 
                 <button class="sidebar__theme-btn"
@@ -205,7 +225,8 @@ export class App {
             return html`
         
             <li class="sidebar__board | title title--m"
-                aria-current="${() => data.currentBoard == id}">
+                aria-current="${() => data.currentBoard == id}"
+                @click="${() => this.closeAltMenu()}">
                 
                 <button @click="${() => data.currentBoard = id}">
                     <svg class="board-icon"><use href="#board-icon"></svg>

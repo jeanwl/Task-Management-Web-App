@@ -8,7 +8,6 @@ import { reactive, html } from '../arrow.js'
 
 export class Board {
     columns = {}
-    maxColumns = 10
     keysToSave = ['name', 'columnsIds']
 
     mousemoveHandler = e => this.onMousemove(e)
@@ -49,11 +48,6 @@ export class Board {
         }
 
         if (isNew) data.name = name
-    }
-
-    get isFull() {
-        // column == max and each column full
-        this.data.columnsIds.length == this.maxColumns
     }
 
     getEl() {
@@ -186,28 +180,26 @@ export class Board {
     }
 
     render() {
-        const newTaskBtn = () => this.isFull ? '' : html`
-        
-        <button class="new-task-btn | btn btn--large btn--primary"
-            @click="${() => this.taskFormDialog.show()}">
-            
-            Add New Task
-        </button>
-
-        `
-
         return html`
         
-        <section class="board">
+        <section class="board"
+            @click="${() => this.app.closeAltMenu()}">
+            
             <header class="board__header">
-                <button class="board__title-btn">
+                <button class="board__title-btn"
+                    @click="${e => this.app.toggleAltMenu(e)}">
+                    
                     <h2 class="board__title | title title--xl">
                         ${() => this.data.name}
                     </h2>
                     <svg class="chevron-icon"><use href="#chevron-icon"></svg>
                 </button>
                 
-                ${newTaskBtn}
+                <button class="new-task-btn | btn btn--large btn--primary"
+                    @click="${() => this.taskFormDialog.show()}">
+                    
+                    Add New Task
+                </button>
                 
                 ${() => this.dropdown.render()}
             </header>
