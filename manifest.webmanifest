@@ -3,16 +3,36 @@
     "name": "Kanban Task Management Web App",
     "icons": [
         {
-            "src": "/favicon.svg",
-            "sizes": "any"
+          "src": "favicon/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
         },
         {
-            "src": "/favicon.ico",
-            "sizes": "16x16 32x32 48x48"
+          "src": "favicon/icon-512.png",
+          "sizes": "512x512",
+          "type": "image/png"
+        },
+        {
+          "purpose": "maskable",
+          "src": "favicon/icon-maskable-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        },
+        {
+          "purpose": "maskable",
+          "src": "favicon/icon-maskable-512.png",
+          "sizes": "512x512",
+          "type": "image/png"
         }
-    ],
-    "start_url": "/Task-Management-Web-App/",
+      ],
+    "start_url": "https://jeanwll.github.io/Task-Management-Web-App/",
     "background_color": "#ffffff",
-    "display": "fullscreen",
-    "description": "Kanban web app simplifies task management"
+    "display": "standalone",
+    "orientation": "portrait",
+    "description": "Kanban web app simplifies task management",
+    "categories": [
+      "productivity",
+      "utilities",
+      "business"
+    ]
 }
