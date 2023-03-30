@@ -35,6 +35,7 @@ button {
 dialog {
     width: 480px;
     height: 100%;
+    max-width: calc(100% - 80px);
     max-height: calc(100% - 80px);
     padding: unset;
     border: unset;

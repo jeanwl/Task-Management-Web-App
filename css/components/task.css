@@ -21,7 +21,6 @@
 }
 
 .task__title {
-    margin-bottom: 8px;
     overflow-wrap: break-word;
 
     transition: color .2s;
@@ -31,5 +30,6 @@
 }
 
 .task__completed {
+    margin-top: 8px;
     color: var(--gray);
 }

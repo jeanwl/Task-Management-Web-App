@@ -27,8 +27,9 @@
 
     new App().render()(document.body)
 
-    if ('serviceWorker' in navigator) 
+    if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('js/serviceWorker.js')
+    }
   </script>
 
   <svg style="display: none">

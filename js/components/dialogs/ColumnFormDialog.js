@@ -64,16 +64,19 @@ export class ColumnFormDialog extends Dialog {
         return html`
         
         <form method="dialog" @submit="${(e) => this.onSubmit(e)}">
-            <h2 class="">
+            <h2 class="title title--l">
                 ${this.title}
             </h2>
 
             <div class="dialog__item dialog__item--single">
                 <input type="color" name="color"
                     value="${this.color}" required>
-                <input type="text" name="name"
+                <input type="text" name="name" maxlength="30"
                     value="${this.name}"
-                    placeholder="${this.namePlaceholder}" required>
+                    placeholder="${this.namePlaceholder}" required
+                    @input="${e => e.target.classList.add('modified')}">
+
+                <span class="invalid-msg | text text--l">Can't be empty</span>
             </div>
             
             <button type="submit" class="btn btn--small btn--primary">

@@ -29,9 +29,11 @@
     position: sticky;
     top: 16px;
     display: flex;
+    align-items: center;
     margin-bottom: 24px;
     z-index: 0;
     cursor: pointer;
+    overflow-wrap: anywhere;
 }
 .column__name:before {
     content: '';
@@ -58,6 +60,7 @@
 
 .column__circle {
     width: 15px;
+    min-width: 15px;
     height: 15px;
     border-radius: 50%;
     margin-right: 12px;

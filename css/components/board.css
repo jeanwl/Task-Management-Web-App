@@ -23,10 +23,10 @@
     box-sizing: border-box;
     position: absolute;
     right: 0;
-    width: calc(100% - var(--header-width));
     display: flex;
     align-items: center;
-    min-height: var(--header-height);
+    width: calc(100% - var(--header-width));
+    height: var(--header-height);
     padding-inline: 24px 12px;
     border-bottom: 1px solid var(--light-gray);
     background-color: white;
@@ -111,29 +111,9 @@
 [data-is-dark] .board__content {
     background-color: var(--deep-blue);
 }
-@media (max-width: 767.98px) {
-    .app[data-altmenu-open] .board__content {
-        pointer-events: none;
-    }
-    
-    .board__content:after {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background-color: black;
-        opacity: 0;
-        pointer-events: none;
-        
-        transition: opacity var(--sidebar-transition);
-    }
-
-    .app[data-altmenu-open] .board__content:after {
-        opacity: 0.5;
-        pointer-events: all;
-    }
-}
 
 .board__columns {
+    position: relative;
     display: flex;
     gap: 24px;
     width: fit-content;

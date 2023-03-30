@@ -163,7 +163,15 @@ export class Task {
 
     render() {
         const { data } = this
-        const { subtasksIds } = data
+        const nSubtasks = data.subtasksIds.length
+
+        const completed = () => nSubtasks ? html`
+        
+        <p class="task__completed | text text--m">
+            ${() => `${this.getNCompleted()} of ${nSubtasks} subtasks`}
+        </p>
+
+        ` : ''
 
         return html`
         
@@ -180,9 +188,8 @@ export class Task {
                 <h4 class="task__title | title title--m">
                     ${() => data.title}
                 </h4>
-                <p class="task__completed | text text--m">
-                    ${() => `${this.getNCompleted()} of ${subtasksIds.length} subtasks`}
-                </p>
+                
+                ${completed}
             </div>
 
             <div @mousedown="${e => e.stopPropagation()}">

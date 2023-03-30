@@ -13,8 +13,7 @@ export class App {
     data = reactive({
         boardsIds: [],
         hideSidebar: false,
-        isAltMenuOpen: false,
-        width: window.innerWidth
+        isAltMenuOpen: false
     })
     
     constructor() {
@@ -29,7 +28,13 @@ export class App {
             data.$on(key, () => this.save())
         }
 
-        addEventListener('resize', () => data.width = window.innerWidth)
+        this.onResize()
+
+        addEventListener('resize', () => this.onResize())
+    }
+
+    onResize() {
+        this.data.isSmall = matchMedia('(max-width: 767.98px)').matches
     }
 
     load() {
@@ -93,7 +98,7 @@ export class App {
     toggleAltMenu(e) {
         const { data } = this
        
-        if (data.width > 767.98) return
+        if (!data.isSmall) return
 
         data.isAltMenuOpen = !data.isAltMenuOpen
 
@@ -103,7 +108,7 @@ export class App {
     closeAltMenu() {
         const { data } = this
        
-        if (data.width > 767.98) return
+        if (!data.isSmall) return
 
         data.isAltMenuOpen = false
     }
@@ -124,7 +129,9 @@ export class App {
                 </h1>
             </header>
 
-            <main class="app__content">
+            <main class="app__content"
+                @click="${() => this.closeAltMenu()}">
+                
                 ${() => this.renderSidebar()}
                 ${() => this.renderBoard()}
 
@@ -146,15 +153,17 @@ export class App {
         const { data } = this
 
         const hidden = () => (
-            data.width > 768
-                ? data.hideSidebar
-                : !data.isAltMenuOpen
+            data.isSmall
+                ? !data.isAltMenuOpen
+                : data.hideSidebar
         )
         
         return html`
             
         <aside class="sidebar" aria-hidden="${hidden}">
-            <div class="sidebar__wrapper">
+            <div class="sidebar__wrapper"
+                @click="${e => e.stopPropagation()}">
+                
                 <h2 class="sidebar__title | title title--s">
                     ${() => `All boards (${data.boardsIds.length})`}
                 </h2>

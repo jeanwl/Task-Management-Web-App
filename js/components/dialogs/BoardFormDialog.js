@@ -3,6 +3,12 @@ import { reactive, html } from '../../arrow.js'
 import { generateId } from '../../generateId.js'
 
 export class BoardFormDialog extends Dialog {
+    defaultColors = ['#49C4E5', '#6460C7', '#67E2AE']
+
+    data = reactive({
+        columns: []
+    })
+
     constructor({ app, board }) {
         super()
         
@@ -19,35 +25,32 @@ export class BoardFormDialog extends Dialog {
             this.namePlaceholder = 'e.g. Web Design'
             this.btnText = 'Create New Board'
             this.defaultColumns = ['Todo', 'Doing']
-            this.defaultColors = ['#49C4E5', '#6460C7', '#67E2AE']
         }
     }
 
     show() {
-        let columns
+        const { columns } = this.data
 
         if (this.isEdit) {
             const { board } = this
 
             this.name = board.getName()
             
-            columns = board.getColumns().map(column => (
+            columns.push(...board.getColumns().map(column => (
                 this.newColumn({
                     id: column.id,
                     name: column.getName(),
                     color: column.getColor()
                 })
-            ))
+            )))
         }
         else {
             const { defaultColors } = this
 
-            columns = this.defaultColumns.map((name, i) => (
+            columns.push(...this.defaultColumns.map((name, i) => (
                 this.newColumn({ name, color: defaultColors[i] })
-            ))
+            )))
         }
-        
-        this.columns = reactive(columns)
 
         super.show()
     }
@@ -55,7 +58,7 @@ export class BoardFormDialog extends Dialog {
     newColumn({ id, name, color } = {}) {
         if (!color) {
             const { defaultColors } = this
-            const nColumns = this.columns.length
+            const nColumns = this.data.columns.length
             const colorIndex = nColumns % defaultColors.length
             
             color = defaultColors[colorIndex]
@@ -79,7 +82,7 @@ export class BoardFormDialog extends Dialog {
         const columnsNames = formData.getAll('column')
         const colors = formData.getAll('color')
 
-        const columns = this.columns.map((column, i) => {
+        const columns = this.data.columns.map((column, i) => {
             column.name = columnsNames[i]
             column.color = colors[i]
 
@@ -98,11 +101,14 @@ export class BoardFormDialog extends Dialog {
                 ${this.title}
             </h2>
 
-            <div>
+            <div class="input-group">
                 <label for="name" class="text text--m">Name</label>
-                <input type="text" name="name"
+                <input type="text" name="name" maxlength="50"
                     value="${this.name}"
-                    placeholder="${this.namePlaceholder}" required>
+                    placeholder="${this.namePlaceholder}" required
+                    @input="${e => e.target.classList.add('modified')}">
+
+                <span class="invalid-msg | text text--l">Can't be empty</span>
             </div>
 
             <fieldset>
@@ -110,7 +116,7 @@ export class BoardFormDialog extends Dialog {
                 ${() => this.renderColumns()}
 
                 <button type="button" class="btn btn--small btn--secondary"
-                    @click="${() => this.columns.push(this.newColumn())}">
+                    @click="${() => this.data.columns.push(this.newColumn())}">
                     
                     + Add New Column
                 </button>
@@ -125,20 +131,25 @@ export class BoardFormDialog extends Dialog {
     }
 
     renderColumns() {
-        const { columns } = this
+        const { columns } = this.data
 
         return columns.map(({name, color, id}, i) => {
             return html`
         
             <li class="dialog__item">
                 <input type="color" name="color" value="${color}" required>
-                <input type="text" name="column" value="${name}" required>
+                <input type="text" name="column" value="${name}" required
+                    @input="${e => e.target.classList.add('modified')}">
+
+                <span class="invalid-msg | text text--l">Can't be empty</span>
 
                 <div class="dialog__drag">
                     <svg class="draggable-icon"><use href="#draggable-icon"></svg>
                 </div>
                 
-                <button type="button" @click="${() => columns.splice(i, 1)}">
+                <button type="button" class="item__remove-btn"
+                    @click="${() => columns.splice(i, 1)}">
+                    
                     <span class="visually-hidden">Remove Column</span>
                     <svg class="cross-icon"><use href="#cross-icon"></svg>
                 </button>

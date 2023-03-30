@@ -3,6 +3,10 @@ import { reactive, html } from '../../arrow.js'
 import { generateId } from '../../generateId.js'
 
 export class TaskFormDialog extends Dialog {
+    data = reactive({
+        subtasks: []
+    })
+    
     constructor({ board, task }) {
         super()
         
@@ -24,7 +28,7 @@ export class TaskFormDialog extends Dialog {
     }
 
     show() {
-        let subtasks
+        const { subtasks } = this.data
 
         if (this.isEdit) {
             const { task } = this
@@ -34,20 +38,18 @@ export class TaskFormDialog extends Dialog {
             
             this.buildColumnsOptions(task.column.board)
 
-            subtasks = this.task.getSubtasks().map(subtask => (
+            subtasks.push(...this.task.getSubtasks().map(subtask => (
                 this.newSubtask({
                     id: subtask.id,
                     title: subtask.getTitle()
                 })
-            ))
+            )))
         }
         else {
             this.buildColumnsOptions(this.board)
 
-            subtasks = Array.from({ length: 2 }, () => this.newSubtask())
+            subtasks.push(...Array.from({ length: 2 }, () => this.newSubtask()))
         }
-        
-        this.subtasks = reactive(subtasks)
 
         super.show()
     }
@@ -77,7 +79,7 @@ export class TaskFormDialog extends Dialog {
         const columnId = formData.get('column')
         const subtasksTitles = formData.getAll('subtask')
 
-        const subtasks = this.subtasks.map((subtask, i) => {
+        const subtasks = this.data.subtasks.map((subtask, i) => {
             subtask.title = subtasksTitles[i]
 
             return subtask
@@ -105,7 +107,7 @@ export class TaskFormDialog extends Dialog {
     }
 
     renderContent() {
-        const { subtasks } = this
+        const { subtasks } = this.data
 
         return html`
         
@@ -114,16 +116,19 @@ export class TaskFormDialog extends Dialog {
                 ${this.title}
             </h2>
 
-            <div>
+            <div class="input-group">
                 <label for="title" class="text text--m">
                     Title
                 </label>
-                <input type="text" name="title" required
+                <input type="text" name="title" required maxlength="100"
                     value="${this.taskTitle}"
-                    placeholder="${this.titlePlaceholder}">
+                    placeholder="${this.titlePlaceholder}"
+                    @input="${e => e.target.classList.add('modified')}">
+
+                <span class="invalid-msg | text text--l">Can't be empty</span>
             </div>
 
-            <div>
+            <div class="input-group">
                 <label for="description" class="text text--m">
                     Description
                 </label>
@@ -165,7 +170,7 @@ export class TaskFormDialog extends Dialog {
     }
 
     renderSubtasks() {
-        const { subtasks } = this
+        const { subtasks } = this.data
         const placeholders = !this.isEdit && this.subtasksPlaceholders
 
         return subtasks.map(({ title, id }, i) => {
@@ -173,13 +178,19 @@ export class TaskFormDialog extends Dialog {
         
             <li class="dialog__item dialog__item--subtask">
                 <input type="text" name="subtask" value="${title}" required
-                    placeholder="${() => placeholders?.[i] ?? false}">
+                    maxlength="50"
+                    placeholder="${() => placeholders?.[i] ?? false}"
+                    @input="${e => e.target.classList.add('modified')}">
+
+                <span class="invalid-msg | text text--l">Can't be empty</span>
 
                 <div class="dialog__drag">
                     <svg class="draggable-icon"><use href="#draggable-icon"></svg>
                 </div>
                 
-                <button type="button" @click="${() => subtasks.splice(i, 1)}">
+                <button type="button" class="item__remove-btn"
+                    @click="${() => subtasks.splice(i, 1)}">
+                    
                     <span class="visually-hidden">Remove Subtask</span>
                     <svg class="cross-icon"><use href="#cross-icon"></svg>
                 </button>

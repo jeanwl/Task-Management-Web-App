@@ -51,7 +51,9 @@
 
     transition: border-color .2s;
 }
-.dialog__content select:hover {
+.dialog__content select:hover,
+.dialog__content select:focus {
+    outline: unset;
     border-color: var(--purple);
 }
 
@@ -109,13 +111,15 @@
     width: 15px;
     height: 15px;
     color: var(--gray);
+
+    transition: color .2s;
 }
 
 .dialog__drag {
     display: grid;
     place-items: center;
     margin-right: 8px;
-    padding-inline: 8px;
+    padding-inline: 16px;
     border: 1px solid var(--input-border);
     border-left: 0;
     border-radius: 0 4px 4px 0;
@@ -166,6 +170,7 @@
 }
 
 .dialog__item {
+    position: relative;
     display: flex;
     margin-bottom: 12px;
 }
@@ -189,6 +194,58 @@
 .dialog__item :where(input[type=text], button) {
     width: unset;
     padding-inline: 8px;
+}
+
+.item__remove-btn:hover .cross-icon {
+    color: var(--red);
+}
+
+input[type=text], textarea {
+    transition: border-color .2s;
+}
+
+input[type=text]:focus,
+input[type=text]:hover,
+textarea:focus,
+textarea:hover {
+    outline: unset;
+    border-color: var(--purple);
+}
+
+input[type=text].modified:invalid {
+    border-color: red;
+}
+input[type=text].modified:invalid::placeholder {
+    opacity: 0;
+}
+
+.invalid-msg {
+    position: absolute;
+    inset: 0 0 0 auto;
+    height: fit-content;
+    margin-block: auto;
+    color: red;
+    pointer-events: none;
+    opacity: 0;
+
+    transition: opacity .2s;
+}
+input[type=text].modified:invalid + .invalid-msg {
+    opacity: 1;
+}
+.dialog__item .invalid-msg {
+    right: 100px;
+}
+.dialog__item--single .invalid-msg {
+    right: 10px;
+}
+.input-group .invalid-msg {
+    top: 22px;
+    right: 17px;
+}
+
+.input-group {
+    position: relative;
 }
 
 form {

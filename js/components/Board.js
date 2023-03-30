@@ -180,11 +180,19 @@ export class Board {
     }
 
     render() {
+        const newTaskBtn = () => this.data.columnsIds.length ? html`
+          
+        <button class="new-task-btn | btn btn--large btn--primary"
+            @click="${() => this.taskFormDialog.show()}">
+            
+            Add New Task
+        </button>
+
+        ` : ''
+
         return html`
         
-        <section class="board"
-            @click="${() => this.app.closeAltMenu()}">
-            
+        <section class="board">
             <header class="board__header">
                 <button class="board__title-btn"
                     @click="${e => this.app.toggleAltMenu(e)}">
@@ -194,12 +202,8 @@ export class Board {
                     </h2>
                     <svg class="chevron-icon"><use href="#chevron-icon"></svg>
                 </button>
-                
-                <button class="new-task-btn | btn btn--large btn--primary"
-                    @click="${() => this.taskFormDialog.show()}">
-                    
-                    Add New Task
-                </button>
+
+                ${newTaskBtn}
                 
                 ${() => this.dropdown.render()}
             </header>
