@@ -49,11 +49,27 @@ self.addEventListener('install', e => {
     )
 })
 
-self.addEventListener('fetch', e => {
-    const requestURL = e.request.url.replace(/^(https:\/\/[^\/]+)(\/Task-Management-Web-App\/)/, '$2')
+// self.addEventListener('fetch', e => {
+//     const requestURL = e.request.url.replace(/^(https:\/\/[^\/]+)(\/Task-Management-Web-App\/)/, '$2')
+//     e.respondWith(
+//         caches.match(requestURL).then(resp => {
+//             return resp || fetch(e.request)
+//         })
+//     )
+// })
+self.addEventListener("fetch", (e) => {
     e.respondWith(
-        caches.match(requestURL).then(resp => {
-            return resp || fetch(e.request)
-        })
-    )
-})
+      (async () => {
+        const r = await caches.match(e.request);
+        console.log(`[Service Worker] Fetching resource: ${e.request.url}`);
+        if (r) {
+          return r;
+        }
+        const response = await fetch(e.request);
+        const cache = await caches.open(cacheName);
+        console.log(`[Service Worker] Caching new resource: ${e.request.url}`);
+        cache.put(e.request, response.clone());
+        return response;
+      })()
+    );
+  });
