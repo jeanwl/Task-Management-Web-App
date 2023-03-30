@@ -42,13 +42,27 @@ const filesToCache = [
     '/js/serviceWorker.js'
 ]
 
+// self.addEventListener('install', e => {
+//     e.waitUntil(
+//         caches.open(cacheName).then(cache => {
+//             return cache.addAll(filesToCache)
+//         })
+//     )
+// })
 self.addEventListener('install', e => {
     e.waitUntil(
-        caches.open(cacheName).then(cache => {
-            return cache.addAll(filesToCache)
-        })
-    )
-})
+      caches.open(cacheName).then(cache => {
+        return Promise.all(
+          filesToCache.map(url => {
+            return cache.add(url).catch(err => {
+              console.error(`Failed to cache ${url}: ${err.message}`);
+            });
+          })
+        );
+      })
+    );
+  });
+  
 
 self.addEventListener('fetch', e => {
     e.respondWith(
