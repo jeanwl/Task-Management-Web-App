@@ -53,7 +53,6 @@
     border: 1px solid var(--input-border);
     background-position: calc(100% - 16px) center;
     cursor: pointer;
-    background-color: var(--navy);
 
     transition: border-color .2s;
 }
@@ -61,6 +60,9 @@
 .dialog__content select:focus {
     outline: unset;
     border-color: var(--purple);
+}
+.app[data-is-dark] .dialog__content select {
+    background-color: var(--navy);
 }
 
 .dialog__select {

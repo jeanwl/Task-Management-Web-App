@@ -122,6 +122,7 @@
     overflow: auto;
     user-select: none;
     background-color: var(--lightest-blue);
+    cursor: grab;
 
     transition: background-color var(--theme-transition);
 }

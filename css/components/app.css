@@ -13,6 +13,9 @@
 .app[data-is-dark] {
     color-scheme: dark;
 }
+.app[data-grabbing] * {
+    cursor: grabbing;
+}
 @media (min-width: 1024px) {
     .app {
         --header-width: 300px;

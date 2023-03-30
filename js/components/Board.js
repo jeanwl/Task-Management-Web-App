@@ -163,6 +163,8 @@ export class Board {
 
         addEventListener('mousemove', this.mousemoveHandler)
         addEventListener('mouseup', this.mouseupHandler)
+
+        document.querySelector('.app').setAttribute('data-grabbing', true)
     }
 
     onMousemove(e) {
@@ -177,6 +179,8 @@ export class Board {
     onMouseup() {
         removeEventListener('mousemove', this.mousemoveHandler)
         removeEventListener('mouseup', this.mouseupHandler)
+
+        document.querySelector('.app').removeAttribute('data-grabbing')
     }
 
     render() {
