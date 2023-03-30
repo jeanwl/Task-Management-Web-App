@@ -50,8 +50,9 @@ self.addEventListener('install', e => {
 })
 
 self.addEventListener('fetch', e => {
+    const requestURL = e.request.url.replace(/^(https:\/\/[^\/]+)(\/Task-Management-Web-App\/)/, '$2')
     e.respondWith(
-        caches.match(e.request).then(resp => {
+        caches.match(requestURL).then(resp => {
             return resp || fetch(e.request)
         })
     )
