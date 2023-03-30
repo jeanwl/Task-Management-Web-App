@@ -11,7 +11,10 @@
     cursor: pointer;
     box-shadow: 0 4px 6px var(--shadow);
 
-    transition: opacity .2s;
+    transition: opacity .2s, background-color var(--theme-transition);
+}
+.app[data-is-dark] .task {
+    background-color: var(--navy);
 }
 .task[data-dragging] {
     opacity: 0.5;
@@ -27,6 +30,9 @@
 }
 .task:hover .task__title {
     color: var(--purple);
+}
+.app[data-is-dark] .task__title {
+    color: white;
 }
 
 .task__completed {

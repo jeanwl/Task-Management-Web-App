@@ -30,6 +30,8 @@ export class TaskFormDialog extends Dialog {
     show() {
         const { subtasks } = this.data
 
+        subtasks.splice(0, subtasks.length)
+
         if (this.isEdit) {
             const { task } = this
 

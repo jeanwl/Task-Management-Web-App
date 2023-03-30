@@ -19,10 +19,13 @@
     background-color: var(--light-gray);
     text-align: center;
 
-    transition: opacity .2s;
+    transition: opacity .2s, background-color var(--theme-transition);
 }
 .column__new-btn:hover {
     opacity: 0.6;
+}
+.app[data-is-dark] .column__new-btn {
+    background-color: var(--navy);
 }
 
 .column__name {
@@ -42,6 +45,11 @@
     background-color: hsla(220, 69%, 97%, 70%);
     backdrop-filter: blur(4px);
     z-index: -1;
+
+    transition: background-color var(--theme-transition);
+}
+.app[data-is-dark] .column__name:before {
+    background-color: hsl(235, 16%, 15%, 70%);
 }
 .column__name:after {
     content: '';
@@ -56,6 +64,9 @@
 }
 .column__name:not(:hover):after {
     opacity: 0;
+}
+.app[data-is-dark] .column__name:after {
+    background-color: var(--navy);
 }
 
 .column__circle {

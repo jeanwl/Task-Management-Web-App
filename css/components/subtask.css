@@ -15,6 +15,12 @@
 .subtask:hover {
     background-color: hsla(242, 48%, 58%, 25%);
 }
+.app[data-is-dark] .subtask {
+    background-color: var(--deep-blue);
+}
+.app[data-is-dark] .subtask:hover {
+    background-color: #39395B;
+}
 
 .subtask__checkbox {
     appearance: none;
@@ -28,6 +34,9 @@
     background-color: white;
     border-radius: 2px;
 }
+:where(.app[data-is-dark]) .subtask__checkbox {
+    background-color: var(--navy);
+}
 .subtask__checkbox:checked {
     background-color: var(--purple);
 }
@@ -38,6 +47,9 @@
     height: 8px;
     margin: auto;
     color: white;
+}
+.subtask__checkbox:not(:checked) + .check-icon {
+    display: none;
 }
 
 .subtask__label {

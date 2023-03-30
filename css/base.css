@@ -108,6 +108,12 @@ html {
 .dropdown__toggle[aria-expanded] {
     background-color: var(--lightest-blue);
 }
+.app[data-is-dark] :is(
+    .dropdown__toggle:hover,
+    .dropdown__toggle[aria-expanded]
+) {
+    background-color: var(--deep-blue);
+}
 .menu-icon {
     width: 5px;
     height: 20px;
@@ -125,6 +131,10 @@ html {
     
     animation-name: fade-in, slide-down;
     animation-duration: .2s;
+}
+.app[data-is-dark] .dropdown__menu {
+    background-color: var(--navy);
+    box-shadow: 0px 10px 20px rgb(127 127 127 / 23%)
 }
 
 .dropdown__item--danger {
@@ -144,6 +154,9 @@ html {
 }
 .dropdown__item:last-of-type .dropdown__btn {
     border-radius: 0 0 8px 8px;
+}
+.app[data-is-dark] .dropdown__btn:hover {
+    background-color: var(--deep-blue);
 }
 
 .visually-hidden {

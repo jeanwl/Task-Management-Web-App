@@ -31,6 +31,8 @@ export class BoardFormDialog extends Dialog {
     show() {
         const { columns } = this.data
 
+        columns.splice(0, columns.length)
+
         if (this.isEdit) {
             const { board } = this
 
