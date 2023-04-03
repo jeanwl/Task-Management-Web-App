@@ -16,6 +16,7 @@ export class Task {
 
     constructor({ id, title, description, isNew, column }) {
         this.column = column
+        this.board = this.column.board
         this.id = id
         this.storageKey = `task_${id}`
 
@@ -140,28 +141,57 @@ export class Task {
         localStorage.removeItem(this.storageKey)
     }
 
-    onDragStart() {
-        this.data.dragging = true
-        this.column.draggedTaskId = this.id
+    onPointerDown(e) {
+        this.isPointerDown = true
+
+        const rect = e.target.closest('.task').getBoundingClientRect()
+        this.offsetX = e.clientX - rect.x
+        this.offsetY = e.clientY - rect.y
+
+        this.pointerMoveHandler = e => this.onPointerMove(e)
+        this.pointerUpHandler = () => this.onPointerUp()
+
+        addEventListener('pointermove', this.pointerMoveHandler)
+        addEventListener('pointerup', this.pointerUpHandler)
+        addEventListener('pointercancel', this.pointerUpHandler)
+        addEventListener('lostpointercapture', this.pointerUpHandler)
     }
 
-    onDragOver(e) {
-        e.preventDefault()
-
-        if (this.column.draggedTaskId == this.id) return
+    onPointerUp() {
+        removeEventListener('pointermove', this.pointerMoveHandler)
+        removeEventListener('pointerup', this.pointerUpHandler)
+        removeEventListener('pointercancel', this.pointerUpHandler)
+        removeEventListener('lostpointercapture', this.pointerUpHandler)
         
-        this.column.dropTask(this.id)
-    }
-
-    onDragEnd() {
+        this.isPointerDown = false
         this.data.dragging = false
+        
+        this.board.onTaskDragStop()
     }
 
-    onDrop() {
-        this.data.dragging = false
+    onPointerMove(e) {
+        if (!this.isPointerDown) return
+        
+        const { data } = this
+
+        if (!data.dragging) {
+            data.dragging = true
+            
+            this.board.onTaskDragStart({ task: this })
+        }
+        const { clientX, clientY } = e
+
+        data.posX = clientX - this.offsetX
+        data.posY = clientY - this.offsetY
+        
+        this.board.onTaskDragMove({ clientX, clientY })
     }
 
-    render() {
+    onPointerOver(e) {
+        if (!this.draggedTask) return
+    } 
+
+    render({ followPointer } = {}) {
         const { data } = this
         const nSubtasks = data.subtasksIds.length
 
@@ -173,15 +203,17 @@ export class Task {
 
         ` : ''
 
+        const style = () => !!followPointer && `
+            translate: ${data.posX}px ${data.posY}px
+        `
+
         return html`
         
         <li>
-            <div class="task" data-dragging="${() => data.dragging}"
-                draggable="true"
-                @dragstart="${e => this.onDragStart(e)}"
-                @dragover="${e => this.onDragOver(e)}"
-                @dragend="${e => this.onDragEnd(e)}"
-                @drop="${e => this.onDrop(e)}"
+            <div class="task${followPointer ? ' task--follow-pointer' : ''}"
+                style="${style}"
+                data-dragging="${() => data.dragging}"
+                @pointerdown="${e => this.onPointerDown(e)}"
                 @click="${() => this.taskDialog.show(this)}"
                 @mousedown="${e => e.stopPropagation()}">
             
