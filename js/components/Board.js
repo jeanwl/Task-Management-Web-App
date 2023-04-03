@@ -10,9 +10,6 @@ export class Board {
     columns = {}
     keysToSave = ['name', 'columnsIds']
 
-    mousemoveHandler = e => this.onMousemove(e)
-    mouseupHandler = () => this.onMouseup()
-
     boardFormDialog = new BoardFormDialog({ board: this })
     confirmDialog = new ConfirmDialog({ board: this })
     taskFormDialog = new TaskFormDialog({ board: this })
@@ -161,10 +158,13 @@ export class Board {
         this.scrollTop = el.scrollTop
         this.scrollLeft = el.scrollLeft
 
+        this.mousemoveHandler = e => this.onMousemove(e)
+        this.mouseupHandler = () => this.onMouseup()
+
         addEventListener('mousemove', this.mousemoveHandler)
         addEventListener('mouseup', this.mouseupHandler)
 
-        document.querySelector('.app').setAttribute('data-grabbing', true)
+        this.app.data.grabbing = true
     }
 
     onMousemove(e) {
@@ -180,7 +180,76 @@ export class Board {
         removeEventListener('mousemove', this.mousemoveHandler)
         removeEventListener('mouseup', this.mouseupHandler)
 
-        document.querySelector('.app').removeAttribute('data-grabbing')
+        this.app.data.grabbing = false
+    }
+
+    onTaskDragStart({ task }) {
+        const el = this.el = this.getEl()
+
+        const rect = el.getBoundingClientRect()
+        this.bounds = {
+            top: rect.top + 20,
+            right: rect.right - 20,
+            bottom: rect.bottom - 20,
+            left: rect.left + 20
+        }
+        
+        this.maxScrollLeft = el.scrollWidth - el.clientWidth
+        this.maxScrollTop = el.scrollHeight - el.clientHeight
+
+        for (const column of this.getColumns()) {
+            for (const task of column.getTasks()) {
+                task.draggedTask = task
+            }
+        }
+
+        this.data.draggedTask = task
+        this.app.data.grabbing = true
+    }
+
+    onTaskDragMove({ clientX, clientY }) {
+        let x = 0, y = 0
+        const { bounds } = this
+        
+        if (clientX < bounds.left) x = -1
+        else if (clientX > bounds.right) x = 1
+        
+        if (clientY < bounds.top) y = -1
+        else if (clientY > bounds.bottom) y = 1
+
+        if (x != 0 || y != 0) {
+            clearTimeout(this.scrollTimeout)
+            this.scroll({ x, y })
+        } else clearTimeout(this.scrollTimeout)
+    }
+
+    onTaskDragStop() {
+        for (const column of this.getColumns()) {
+            for (const task of column.getTasks()) {
+                task.draggedTask = null
+            }
+        }
+        
+        this.data.draggedTask = null
+        this.app.data.grabbing = false
+
+        clearTimeout(this.scrollTimeout)
+    }
+
+    scroll({ x, y }) {
+        const { el } = this
+        const { scrollLeft, scrollTop } = el
+        const newLeft = scrollLeft + x
+        const newTop = scrollTop + y
+
+        if (x != 0 && newLeft > 0 && newLeft < this.maxScrollLeft) {
+            el.scrollLeft = newLeft
+        }
+        if (y != 0 && newTop > 0 && newTop < this.maxScrollTop) {
+            el.scrollTop = newTop
+        }
+
+        this.scrollTimeout = setTimeout(() => this.scroll({ x, y }))
     }
 
     render() {
@@ -216,6 +285,8 @@ export class Board {
                 @mousedown="${e => this.onMousedown(e)}">
                 
                 ${() => this.renderColumns()}
+            
+                ${() => this.data.draggedTask?.render({ followPointer: true })}
             </section>
 
             ${() => this.boardFormDialog.render()}

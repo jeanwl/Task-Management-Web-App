@@ -13,7 +13,8 @@ export class App {
     data = reactive({
         boardsIds: [],
         hideSidebar: false,
-        isAltMenuOpen: false
+        isAltMenuOpen: false,
+        grabbing: false
     })
     
     constructor() {
@@ -120,7 +121,8 @@ export class App {
         
         <div class="app" data-is-dark="${() => data.isDark}"
             data-sidebar-closed="${() => data.hideSidebar}"
-            data-altmenu-open="${() => data.isAltMenuOpen}">
+            data-altmenu-open="${() => data.isAltMenuOpen}"
+            data-grabbing="${() => data.grabbing}">
 
             <header class="app__header">
                 <h1 class="kanban-logo">

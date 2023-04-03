@@ -16,11 +16,13 @@
 .app[data-is-dark] .task {
     background-color: var(--navy);
 }
-.task[data-dragging] {
-    opacity: 0.5;
-}
-.task[data-dragging] :is(.task__title, .task__completed) {
+.task[data-dragging]:not(.task--follow-pointer) {
     pointer-events: none;
+    outline: 4px solid var(--purple);
+    background-color: transparent;
+}
+.task[data-dragging]:not(.task--follow-pointer) :is(.task__title, .task__completed) {
+    opacity: 0;
 }
 
 .task__title {
@@ -38,4 +40,13 @@
 .task__completed {
     margin-top: 8px;
     color: var(--gray);
+}
+
+.task--follow-pointer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 280px;
+    box-sizing: border-box;
+    pointer-events: none;
 }
