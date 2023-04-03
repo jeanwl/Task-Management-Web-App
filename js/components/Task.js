@@ -141,13 +141,7 @@ export class Task {
         localStorage.removeItem(this.storageKey)
     }
 
-    onPointerDown(e) {
-        this.isPointerDown = true
-
-        const rect = e.target.closest('.task').getBoundingClientRect()
-        this.offsetX = e.clientX - rect.x
-        this.offsetY = e.clientY - rect.y
-
+    async onPointerDown(e) {
         this.pointerMoveHandler = e => this.onPointerMove(e)
         this.pointerUpHandler = () => this.onPointerUp()
 
@@ -155,6 +149,25 @@ export class Task {
         addEventListener('pointerup', this.pointerUpHandler)
         addEventListener('pointercancel', this.pointerUpHandler)
         addEventListener('lostpointercapture', this.pointerUpHandler)
+        
+        await new Promise(r => (this.pressTimeout = setTimeout(r, 100)))
+
+        this.preventDefault = e => e.preventDefault()
+        this.stopPropagation = e => e.stopPropagation()
+        
+        addEventListener('touchmove', this.preventDefault, {passive: false})
+        addEventListener('mousemove', this.stopPropagation, true)
+
+        this.isPointerDown = true
+
+        const rect = e.target.closest('.task').getBoundingClientRect()
+        this.offsetX = e.clientX - rect.x
+        this.offsetY = e.clientY - rect.y
+        
+        this.data.dragging = true
+        
+        this.board.onTaskDragStart({ task: this })
+        this.onPointerMove(e)
     }
 
     onPointerUp() {
@@ -162,23 +175,21 @@ export class Task {
         removeEventListener('pointerup', this.pointerUpHandler)
         removeEventListener('pointercancel', this.pointerUpHandler)
         removeEventListener('lostpointercapture', this.pointerUpHandler)
+        removeEventListener('touchmove', this.preventDefault, {passive: false})
+        removeEventListener('mousemove', this.stopPropagation, true)
         
         this.isPointerDown = false
         this.data.dragging = false
         
         this.board.onTaskDragStop()
+        
+        clearTimeout(this.pressTimeout)
     }
 
     onPointerMove(e) {
-        if (!this.isPointerDown) return
+        if (!this.isPointerDown) return clearTimeout(this.pressTimeout)
         
         const { data } = this
-
-        if (!data.dragging) {
-            data.dragging = true
-            
-            this.board.onTaskDragStart({ task: this })
-        }
         const { clientX, clientY } = e
 
         data.posX = clientX - this.offsetX
@@ -188,8 +199,11 @@ export class Task {
     }
 
     onPointerOver(e) {
+        console.log('onPointerOver')
         if (!this.draggedTask) return
-    } 
+
+        console.log('onPointerOver')
+    }
 
     render({ followPointer } = {}) {
         const { data } = this
@@ -214,14 +228,16 @@ export class Task {
                 style="${style}"
                 data-dragging="${() => data.dragging}"
                 @pointerdown="${e => this.onPointerDown(e)}"
-                @click="${() => this.taskDialog.show(this)}"
-                @mousedown="${e => e.stopPropagation()}">
+                @pointerover="${e => this.onPointerOver(e)}"
+                @click="${() => this.taskDialog.show(this)}">
             
                 <h4 class="task__title | title title--m">
                     ${() => data.title}
                 </h4>
                 
                 ${completed}
+
+                <div class="task__top-hitbox"></div>
             </div>
 
             <div @mousedown="${e => e.stopPropagation()}">

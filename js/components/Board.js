@@ -163,11 +163,11 @@ export class Board {
 
         addEventListener('mousemove', this.mousemoveHandler)
         addEventListener('mouseup', this.mouseupHandler)
-
-        this.app.data.grabbing = true
     }
 
     onMousemove(e) {
+        this.app.data.grabbing = true
+        
         const { el } = this
         const dx = e.clientX - this.mouseX
         const dy = e.clientY - this.mouseY

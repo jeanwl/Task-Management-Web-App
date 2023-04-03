@@ -5,6 +5,7 @@
 }
 
 .task {
+    position: relative;
     padding: 23px 16px;
     background-color: white;
     border-radius: 8px;
@@ -12,6 +13,9 @@
     box-shadow: 0 4px 6px var(--shadow);
 
     transition: opacity .2s, background-color var(--theme-transition);
+}
+.app[data-grabbing] .task {
+    pointer-events: none;
 }
 .app[data-is-dark] .task {
     background-color: var(--navy);
@@ -23,6 +27,14 @@
 }
 .task[data-dragging]:not(.task--follow-pointer) :is(.task__title, .task__completed) {
     opacity: 0;
+}
+
+.task__top-hitbox {
+    position: absolute;
+    inset: 0 0 50% 0;
+}
+.task[data-dragging] + .task .task__top-hitbox {
+    pointer-events: none;
 }
 
 .task__title {
@@ -49,4 +61,5 @@
     width: 280px;
     box-sizing: border-box;
     pointer-events: none;
+    z-index: 2;
 }
