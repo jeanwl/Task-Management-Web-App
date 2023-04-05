@@ -29,7 +29,8 @@ export class Dialog {
         
         <dialog class="dialog" id="${this.elId}"
             @click="${() => this.close()}"
-            @close="${() => this.onClose()}">
+            @close="${() => this.onClose()}"
+            @pointermove="${e => e.stopPropagation()}">
             
             <div class="dialog__content"
                 @click="${e => e.stopPropagation()}">

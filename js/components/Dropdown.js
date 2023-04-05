@@ -3,9 +3,6 @@ import { generateId } from '../generateId.js'
 
 export class Dropdown {
     elId = `dropdown_${generateId()}`
-    
-    clickHandler = e => this.onClick(e)
-    keyHandler = e => this.onKey(e)
 
     data = reactive({
         isOpen: false
@@ -23,24 +20,24 @@ export class Dropdown {
     open() {
         this.data.isOpen = true
 
-        addEventListener('pointerdown', this.clickHandler, true)
-        addEventListener('keydown', this.keyHandler, true)
+        addEventListener('pointerdown', this.onClick, true)
+        addEventListener('keydown', this.onKey, true)
     }
 
     close() {
-        removeEventListener('pointerdown', this.clickHandler, true)
-        removeEventListener('keydown', this.keyHandler, true)
+        removeEventListener('pointerdown', this.onClick, true)
+        removeEventListener('keydown', this.onKey, true)
 
         this.data.isOpen = false
     }
 
-    onClick(e) {
+    onClick = e => {
         if (e.target.closest(`#${this.elId}`)) return
 
         this.close()
     }
 
-    onKey(e) {
+    onKey = e => {
         if (e.key != 'Escape') return
         
         this.close()

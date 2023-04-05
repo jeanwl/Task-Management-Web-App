@@ -14,7 +14,7 @@ export class App {
         boardsIds: [],
         hideSidebar: false,
         isAltMenuOpen: false,
-        grabbing: false
+        draggingTask: false
     })
     
     constructor() {
@@ -122,7 +122,7 @@ export class App {
         <div class="app" data-is-dark="${() => data.isDark}"
             data-sidebar-closed="${() => data.hideSidebar}"
             data-altmenu-open="${() => data.isAltMenuOpen}"
-            data-grabbing="${() => data.grabbing}">
+            data-dragging-task="${() => data.draggingTask}">
 
             <header class="app__header">
                 <h1 class="kanban-logo">

@@ -13,7 +13,7 @@
 .app[data-is-dark] {
     color-scheme: dark;
 }
-.app[data-grabbing] * {
+.app[data-dragging-task] * {
     cursor: grabbing;
 }
 @media (min-width: 1024px) {
@@ -140,6 +140,7 @@
     .sidebar {
         position: absolute;
         inset: 0;
+        z-index: 3;
     }
     .sidebar[aria-hidden] {
         pointer-events: none;

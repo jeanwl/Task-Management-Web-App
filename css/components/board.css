@@ -129,6 +129,9 @@
 [data-is-dark] .board__content {
     background-color: var(--deep-blue);
 }
+.board__content[data-dragging] {
+    cursor: grabbing;
+}
 
 .board__columns {
     position: relative;

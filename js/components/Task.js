@@ -158,49 +158,41 @@ export class Task {
     }
 
     onPress(e) {
-        this.cancelPress()
-
-        const { x, y } = e.target.closest('.task').getBoundingClientRect()
-        this.offsetX = e.clientX - x
-        this.offsetY = e.clientY - y
+        const { data } = this
+        const { target } = e
         
-        this.data.dragging = true
+        this.cancelPress()
+        
+        data.dragging = true
+
+        const { x, y } = target.getBoundingClientRect()
+        data.posX = x
+        data.posY = y
         
         this.board.onTaskDragStart({ task: this })
 
-        this.onPointerMove(e)
-        
-        addEventListener('pointermove', this.onPointerMove)
-        
+        addEventListener('pointermove', this.onDrag)
         addEventListener('pointerup', this.onRelease)
         addEventListener('pointercancel', this.onRelease)
     }
 
-    onPointerMove = ({ clientX, clientY }) => {
+    onDrag = e => {
         const { data } = this
 
-        data.posX = clientX - this.offsetX
-        data.posY = clientY - this.offsetY
+        data.posX += e.movementX
+        data.posY += e.movementY
         
-        this.board.onTaskDragMove({ clientX, clientY })
+        this.board.onTaskDrag(e)
     }
 
-    onRelease = (e) => {
-        console.log('onRelease', e)
-        removeEventListener('pointermove', this.onPointerMove)
-        
+    onRelease = () => {
+        removeEventListener('pointermove', this.onDrag)
         removeEventListener('pointerup', this.onRelease)
         removeEventListener('pointercancel', this.onRelease)
         
         this.data.dragging = false
 
         this.board.onTaskDragStop()
-    }
-
-    onPointerOver(e) {
-        if (!this.draggedTask) return
-
-        // console.log('onPointerOver')
     }
 
     render({ followPointer } = {}) {
@@ -221,13 +213,12 @@ export class Task {
 
         return html`
         
-        <li>
+        <li class="task-item" data-id="${this.id}" data-column-id="${this.column.id}">
             <div class="task${followPointer ? ' task--follow-pointer' : ''}"
                 style="${style}"
-                data-dragging="${() => data.dragging}"
+                data-dragging="${() => !followPointer && data.dragging}"
                 @pointerdown="${e => this.onPointerDown(e)}"
-                @pointerover="${e => this.onPointerOver(e)}"
-                @click="${() => this.taskDialog.show(this)}"
+                @click="${() => !data.dragging && this.taskDialog.show(this)}"
                 @touchmove="${e => data.dragging && e.preventDefault() }">
             
                 <h4 class="task__title | title title--m">
@@ -239,7 +230,7 @@ export class Task {
                 <div class="task__top-hitbox"></div>
             </div>
 
-            <div @mousedown="${e => e.stopPropagation()}">
+            <div>
                 ${() => this.taskDialog.render()}
             </div>
         </li>

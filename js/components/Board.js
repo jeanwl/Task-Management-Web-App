@@ -28,7 +28,8 @@ export class Board {
     ])
 
     data = reactive({
-        columnsIds: []
+        columnsIds: [],
+        dragging: false
     })
 
     constructor({ id, name, isNew, app }) {
@@ -47,7 +48,7 @@ export class Board {
         if (isNew) data.name = name
     }
 
-    getEl() {
+    get el() {
         return window[this.elId]
     }
 
@@ -151,98 +152,87 @@ export class Board {
         localStorage.removeItem(this.storageKey)
     }
 
-    onMouseDown(e) {
-        const el = this.el = this.getEl()
-        this.mouseX = e.clientX
-        this.mouseY = e.clientY
-        this.scrollTop = el.scrollTop
-        this.scrollLeft = el.scrollLeft
-
-        addEventListener('mousemove', this.onMouseMove)
-        addEventListener('mouseup', this.onMouseUp)
+    cancelDrag = () => {
+        removeEventListener('pointermove', this.startDrag)
+        removeEventListener('pointerup', this.cancelDrag)
     }
 
-    onMouseMove = (e) => {
-        this.app.data.grabbing = true
+    startDrag = e => {
+        this.cancelDrag()
         
-        const { el } = this
-        const dx = e.clientX - this.mouseX
-        const dy = e.clientY - this.mouseY
-
-        el.scrollLeft = this.scrollLeft - dx
-        el.scrollTop = this.scrollTop - dy
+        this.el.setPointerCapture(e.pointerId)
+        this.data.dragging = true
     }
 
-    onMouseUp = () => {
-        removeEventListener('mousemove', this.onMouseMove)
-        removeEventListener('mouseup', this.onMouseUp)
+    onPointerDown(e) {
+        if (e.pointerType != 'mouse') return
 
-        this.app.data.grabbing = false
+        addEventListener('pointermove', this.startDrag)
+        addEventListener('pointerup', this.cancelDrag)
+    }
+
+    onLostPointerCapture() {
+        this.data.dragging = false
+    }
+
+    onPointerMove(e) {
+        if (!this.data.dragging) return
+        
+        this.el.scrollBy(-e.movementX, -e.movementY)
     }
 
     onTaskDragStart({ task }) {
-        const el = this.el = this.getEl()
+        this.cancelDrag()
 
-        const rect = el.getBoundingClientRect()
+        const rect = this.el.getBoundingClientRect()
         this.bounds = {
             top: rect.top + 20,
             right: rect.right - 20,
             bottom: rect.bottom - 20,
             left: rect.left + 20
         }
-        
-        this.maxScrollLeft = el.scrollWidth - el.clientWidth
-        this.maxScrollTop = el.scrollHeight - el.clientHeight
 
-        for (const column of this.getColumns()) {
-            for (const task of column.getTasks()) {
-                task.draggedTask = task
-            }
-        }
-
-        this.onMouseUp()
-
-        this.data.draggedTask = task
+        this.data.draggingTask = task
+        this.app.data.draggingTask = true
     }
 
-    onTaskDragMove({ clientX, clientY }) {
-        const { top, right, bottom, left } = this.bounds
+    onTaskDrag(e) {
+        this.attemptTaskDrop(e)
 
+        const { top, right, bottom, left } = this.bounds
+        const { clientX, clientY } = e
         const x = clientX < left ? -1 : clientX > right ? 1 : 0
         const y = clientY < top ? -1 : clientY > bottom ? 1 : 0
 
-        if (x != 0 || y != 0) {
-            clearTimeout(this.scrollTimeout)
-            this.scroll({ x, y })
-        } else clearTimeout(this.scrollTimeout)
+        if (x == 0 && y == 0) return
+
+        this.scrollInterval = setInterval(() => this.el.scrollBy(x, y))
+    }
+
+    attemptTaskDrop({ clientX, clientY }) {
+        const el = document.elementFromPoint(clientX, clientY)
+        const taskEl = el.closest('.task-item')
+
+        if (!taskEl) return
+
+        const { draggingTask } = this.data
+        const taskId = taskEl.dataset.id
+
+        if (taskId == draggingTask.id) return
+
+        console.log('other task underneath')
+        const columnId = taskEl.dataset.columnId
+        
+        if (columnId == draggingTask.column.id) {
+            this.columns[columnId].dropTask({ task: draggingTask, toId: taskId })
+        }
     }
 
     onTaskDragStop() {
-        for (const column of this.getColumns()) {
-            for (const task of column.getTasks()) {
-                task.draggedTask = null
-            }
-        }
-        
-        this.data.draggedTask = null
+        this.data.draggingTask = null
+        this.app.data.draggingTask = false
 
-        clearTimeout(this.scrollTimeout)
-    }
-
-    scroll({ x, y }) {
-        const { el } = this
-        const { scrollLeft, scrollTop } = el
-        const newLeft = scrollLeft + x
-        const newTop = scrollTop + y
-
-        if (x != 0 && newLeft > 0 && newLeft < this.maxScrollLeft) {
-            el.scrollLeft = newLeft
-        }
-        if (y != 0 && newTop > 0 && newTop < this.maxScrollTop) {
-            el.scrollTop = newTop
-        }
-
-        this.scrollTimeout = setTimeout(() => this.scroll({ x, y }))
+        clearInterval(this.scrollInterval)
     }
 
     render() {
@@ -277,11 +267,14 @@ export class Board {
             </header>
 
             <section class="board__content" id="${this.elId}"
-                @mousedown="${e => this.onMouseDown(e)}">
+                data-dragging="${() => data.dragging}"
+                @pointerdown="${e => this.onPointerDown(e)}"
+                @lostpointercapture="${() => this.onLostPointerCapture()}"
+                @pointermove="${e => this.onPointerMove(e)}">
                 
                 ${() => this.renderColumns()}
             
-                ${() => data.draggedTask?.render({ followPointer: true })}
+                ${() => data.draggingTask?.render({ followPointer: true })}
             </section>
 
             ${() => this.boardFormDialog.render()}

@@ -1,9 +1,3 @@
-.tasks {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
 .task {
     position: relative;
     padding: 23px 16px;
@@ -14,29 +8,34 @@
 
     transition: opacity .2s, background-color var(--theme-transition);
 }
-/* prevents open task on board dragging release */
-.app[data-grabbing] .task {
-    pointer-events: none;
-}
 .app[data-is-dark] .task {
     background-color: var(--navy);
 }
-.task[data-dragging]:not(.task--follow-pointer) {
-    pointer-events: none;
+.task[data-dragging] {
     outline: 4px solid var(--purple);
     background-color: transparent;
+    cursor: grabbing;
+    pointer-events: none;
 }
-.task[data-dragging]:not(.task--follow-pointer) :is(.task__title, .task__completed) {
+.task[data-dragging] :is(.task__title, .task__completed) {
     opacity: 0;
+}
+
+.task :is(.task__title, .task__completed) {
+    pointer-events: none;
+}
+
+.task-item:not(:first-of-type) {
+    padding-top: 20px;
 }
 
 .task__top-hitbox {
     position: absolute;
     inset: 0 0 50% 0;
 }
-.task[data-dragging] + .task .task__top-hitbox {
+/* .task[data-dragging] + .task .task__top-hitbox {
     pointer-events: none;
-}
+} */
 
 .task__title {
     overflow-wrap: break-word;
@@ -62,5 +61,5 @@
     width: 280px;
     box-sizing: border-box;
     z-index: 2;
-    cursor: grabbing;
+    pointer-events: none;
 }

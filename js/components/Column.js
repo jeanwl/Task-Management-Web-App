@@ -114,9 +114,9 @@ export class Column {
         tasksIds.splice(to, 0, id)
     }
 
-    dropTask(toId) {
+    dropTask({ task, toId }) {
         const { tasksIds } = this.data
-        const id = this.draggedTaskId
+        const id = task.id
         const indexFrom = tasksIds.indexOf(id)
         const indexTo = tasksIds.indexOf(toId)
 
@@ -146,8 +146,7 @@ export class Column {
         
         <li class="column">
             <h3 class="column__name | title title--s"
-                @click="${() => this.columnFormDialog.show()}"
-                @mousedown="${e => e.stopPropagation()}">
+                @click="${() => this.columnFormDialog.show()}">
                 
                 <span class="column__circle" aria-hidden="true"
                     style="background-color: ${data.color}"></span>
@@ -159,8 +158,7 @@ export class Column {
                 ${() => this.getTasks().map(task => task.render())}
             </ul>
 
-            <div @click="${e => e.stopPropagation()}"
-                @mousedown="${e => e.stopPropagation()}">
+            <div>
                 ${() => this.columnFormDialog.render()}
             </div>
         </li>
