@@ -14,6 +14,7 @@
 
     transition: opacity .2s, background-color var(--theme-transition);
 }
+/* prevents open task on board dragging release */
 .app[data-grabbing] .task {
     pointer-events: none;
 }
@@ -60,6 +61,6 @@
     left: 0;
     width: 280px;
     box-sizing: border-box;
-    pointer-events: none;
     z-index: 2;
+    cursor: grabbing;
 }

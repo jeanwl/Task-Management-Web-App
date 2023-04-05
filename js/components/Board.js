@@ -151,21 +151,18 @@ export class Board {
         localStorage.removeItem(this.storageKey)
     }
 
-    onMousedown(e) {
+    onMouseDown(e) {
         const el = this.el = this.getEl()
         this.mouseX = e.clientX
         this.mouseY = e.clientY
         this.scrollTop = el.scrollTop
         this.scrollLeft = el.scrollLeft
 
-        this.mousemoveHandler = e => this.onMousemove(e)
-        this.mouseupHandler = () => this.onMouseup()
-
-        addEventListener('mousemove', this.mousemoveHandler)
-        addEventListener('mouseup', this.mouseupHandler)
+        addEventListener('mousemove', this.onMouseMove)
+        addEventListener('mouseup', this.onMouseUp)
     }
 
-    onMousemove(e) {
+    onMouseMove = (e) => {
         this.app.data.grabbing = true
         
         const { el } = this
@@ -176,9 +173,9 @@ export class Board {
         el.scrollTop = this.scrollTop - dy
     }
 
-    onMouseup() {
-        removeEventListener('mousemove', this.mousemoveHandler)
-        removeEventListener('mouseup', this.mouseupHandler)
+    onMouseUp = () => {
+        removeEventListener('mousemove', this.onMouseMove)
+        removeEventListener('mouseup', this.onMouseUp)
 
         this.app.data.grabbing = false
     }
@@ -203,19 +200,16 @@ export class Board {
             }
         }
 
+        this.onMouseUp()
+
         this.data.draggedTask = task
-        this.app.data.grabbing = true
     }
 
     onTaskDragMove({ clientX, clientY }) {
-        let x = 0, y = 0
-        const { bounds } = this
-        
-        if (clientX < bounds.left) x = -1
-        else if (clientX > bounds.right) x = 1
-        
-        if (clientY < bounds.top) y = -1
-        else if (clientY > bounds.bottom) y = 1
+        const { top, right, bottom, left } = this.bounds
+
+        const x = clientX < left ? -1 : clientX > right ? 1 : 0
+        const y = clientY < top ? -1 : clientY > bottom ? 1 : 0
 
         if (x != 0 || y != 0) {
             clearTimeout(this.scrollTimeout)
@@ -231,7 +225,6 @@ export class Board {
         }
         
         this.data.draggedTask = null
-        this.app.data.grabbing = false
 
         clearTimeout(this.scrollTimeout)
     }
@@ -253,7 +246,9 @@ export class Board {
     }
 
     render() {
-        const newTaskBtn = () => this.data.columnsIds.length ? html`
+        const { data } = this
+
+        const newTaskBtn = () => data.columnsIds.length ? html`
           
         <button class="new-task-btn | btn btn--large btn--primary"
             @click="${() => this.taskFormDialog.show()}">
@@ -271,7 +266,7 @@ export class Board {
                     @click="${e => this.app.toggleAltMenu(e)}">
                     
                     <h2 class="board__title | title title--xl">
-                        ${() => this.data.name}
+                        ${() => data.name}
                     </h2>
                     <svg class="chevron-icon"><use href="#chevron-icon"></svg>
                 </button>
@@ -282,11 +277,11 @@ export class Board {
             </header>
 
             <section class="board__content" id="${this.elId}"
-                @mousedown="${e => this.onMousedown(e)}">
+                @mousedown="${e => this.onMouseDown(e)}">
                 
                 ${() => this.renderColumns()}
             
-                ${() => this.data.draggedTask?.render({ followPointer: true })}
+                ${() => data.draggedTask?.render({ followPointer: true })}
             </section>
 
             ${() => this.boardFormDialog.render()}
