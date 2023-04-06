@@ -49,36 +49,10 @@ const buildCache = async () => {
 	await cache.addAll(filesToCache)
 }
 
-// const getCache = async (request) => {
-// 	const cache = await caches.open(cacheName)
-
-// 	return await cache.match(request)
-// }
-
 const getCache = async (request) => {
 	const cache = await caches.open(cacheName)
-	console.log(cache)
-	
-	return await cache.match(new Request(filesToCache[0]))
 
-	// const cache = await caches.open(cacheName);
-	// const cachedResponse = await cache.match(request);
-
-	// if (cachedResponse) {
-	// 	return cachedResponse;
-	// }
-
-	// try {
-	// 	const response = await fetch(request);
-	// 	if (request.mode === 'navigate') {
-	// 		const clonedResponse = response.clone();
-	// 		cache.put(request, clonedResponse);
-	// 	}
-	// 	return response;
-	// } catch (error) {
-	// 	// Fallback to the cached index.html when offline
-	// 	return await cache.match('/index.html');
-	// }
+	return await cache.match(request)
 }
 
 self.addEventListener('install', e => {
