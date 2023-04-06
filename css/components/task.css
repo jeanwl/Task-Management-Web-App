@@ -29,6 +29,10 @@
     padding-top: 20px;
 }
 
+.task-item {
+    position: relative;
+}
+
 .task__top-hitbox {
     position: absolute;
     inset: 0 0 50% 0;

@@ -97,31 +97,33 @@ export class Column {
         delete tasks[id]
     }
 
-    insertTask(task) {
+    insertTask({ task, belowId }) {
+        const { tasksIds } = this.data
         const id = task.id
 
         task.column = this
         this.tasks[id] = task
-        this.data.tasksIds.push(id)
+        
+        if (belowId == null) return tasksIds.push(id)
+        
+        tasksIds.splice(tasksIds.indexOf(belowId), 0, id)
     }
 
-    moveTask({ task, to }) {
-        // not used yet?
+    isIdAbove({ id, otherId }) {
         const { tasksIds } = this.data
-        const id = task.id
+        const index = tasksIds.indexOf(id)
+        const otherIndex = tasksIds.indexOf(otherId)
 
-        tasksIds.splice(tasksIds.indexOf(id), 1)
-        tasksIds.splice(to, 0, id)
+        return index < otherIndex
     }
 
-    dropTask({ task, toId }) {
+    switchTasks({ id, otherId }) {
         const { tasksIds } = this.data
-        const id = task.id
-        const indexFrom = tasksIds.indexOf(id)
-        const indexTo = tasksIds.indexOf(toId)
+        const index = tasksIds.indexOf(id)
+        const otherIndex = tasksIds.indexOf(otherId)
 
-        tasksIds.splice(indexFrom, 1)
-        tasksIds.splice(indexTo, 0, id)
+        tasksIds.splice(index, 1)
+        tasksIds.splice(otherIndex, 0, id)
     }
 
     removeSave() {
@@ -144,7 +146,7 @@ export class Column {
 
         return html`
         
-        <li class="column">
+        <li class="column" data-id="${this.id}">
             <h3 class="column__name | title title--s"
                 @click="${() => this.columnFormDialog.show()}">
                 

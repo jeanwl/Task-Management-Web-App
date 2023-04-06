@@ -218,7 +218,7 @@ export class Task {
                 style="${style}"
                 data-dragging="${() => !followPointer && data.dragging}"
                 @pointerdown="${e => this.onPointerDown(e)}"
-                @click="${() => !data.dragging && this.taskDialog.show(this)}"
+                @click="${() => this.taskDialog.show(this)}"
                 @touchmove="${e => data.dragging && e.preventDefault() }">
             
                 <h4 class="task__title | title title--m">
@@ -226,13 +226,13 @@ export class Task {
                 </h4>
                 
                 ${completed}
-
-                <div class="task__top-hitbox"></div>
             </div>
 
             <div>
                 ${() => this.taskDialog.render()}
             </div>
+
+            <div class="task__top-hitbox"></div>
         </li>
 
         `

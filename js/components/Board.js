@@ -107,7 +107,7 @@ export class Board {
     moveTask({ task, to }) {
         task.column.removeTask({ id: task.id })
         
-        this.columns[to].insertTask(task)
+        this.columns[to].insertTask({ task })
     }
 
     edit({ name, columns: editedColumns }) {
@@ -204,6 +204,8 @@ export class Board {
         const x = clientX < left ? -1 : clientX > right ? 1 : 0
         const y = clientY < top ? -1 : clientY > bottom ? 1 : 0
 
+        clearInterval(this.scrollInterval)
+
         if (x == 0 && y == 0) return
 
         this.scrollInterval = setInterval(() => this.el.scrollBy(x, y))
@@ -211,21 +213,48 @@ export class Board {
 
     attemptTaskDrop({ clientX, clientY }) {
         const el = document.elementFromPoint(clientX, clientY)
-        const taskEl = el.closest('.task-item')
 
-        if (!taskEl) return
-
-        const { draggingTask } = this.data
-        const taskId = taskEl.dataset.id
-
-        if (taskId == draggingTask.id) return
-
-        console.log('other task underneath')
-        const columnId = taskEl.dataset.columnId
+        if (!el) return
         
-        if (columnId == draggingTask.column.id) {
-            this.columns[columnId].dropTask({ task: draggingTask, toId: taskId })
+        const columnEl = el.closest('.column:not(.column--new)')
+
+        if (!columnEl) return
+        
+        const taskEl = el.closest('.task-item')
+        const { draggingTask } = this.data
+        const draggingTaskColumn = draggingTask.column
+        const draggingTaskId = draggingTask.id
+
+        if (!taskEl) {
+            const column = this.columns[columnEl.dataset.id]
+            
+            draggingTaskColumn.removeTask({ id: draggingTaskId })
+            column.insertTask({ task: draggingTask })
+
+            return
         }
+        
+        const taskId = Number(taskEl.dataset.id)
+
+        if (taskId == draggingTaskId) return
+
+        const columnId = Number(taskEl.dataset.columnId)
+        const column = this.columns[columnId]
+        
+        if (columnId == draggingTaskColumn.id) {
+            const isAbove = column.isIdAbove({ id: draggingTaskId, otherId: taskId })
+            const isAboveTopHalf = el.matches('.task__top-hitbox')
+
+            if (isAbove && isAboveTopHalf) return
+            if (!isAbove && !isAboveTopHalf) return
+
+            column.switchTasks({ id: draggingTask.id, otherId: taskId })
+
+            return
+        }
+
+        draggingTaskColumn.removeTask({ id: draggingTaskId })
+        column.insertTask({ task: draggingTask, belowId: taskId })
     }
 
     onTaskDragStop() {

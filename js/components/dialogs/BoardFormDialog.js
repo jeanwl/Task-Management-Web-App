@@ -74,10 +74,6 @@ export class BoardFormDialog extends Dialog {
         }
     }
 
-    moveColumn(from, to) {
-
-    }
-
     onSubmit(e) {
         const formData = new FormData(e.target)
         const name = formData.get('name')
@@ -144,10 +140,6 @@ export class BoardFormDialog extends Dialog {
                     @input="${e => e.target.classList.add('modified')}">
 
                 <span class="invalid-msg | text text--l">Can't be empty</span>
-
-                <div class="dialog__drag">
-                    <svg class="draggable-icon"><use href="#draggable-icon"></svg>
-                </div>
                 
                 <button type="button" class="item__remove-btn"
                     @click="${() => columns.splice(i, 1)}">
