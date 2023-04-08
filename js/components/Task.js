@@ -145,7 +145,7 @@ export class Task {
         const deltaX = Math.abs(e.clientX - this.pressX)
         const deltaY = Math.abs(e.clientY - this.pressY)
 
-        if (deltaX < 5 && deltaY < 5) return
+        if (deltaX < 10 && deltaY < 10) return
 
         removeEventListener('pointermove', this.cancelPress)
         removeEventListener('pointerup', this.cancelPress)
@@ -157,7 +157,7 @@ export class Task {
     onPointerDown(e) {
         this.pressX = e.clientX
         this.pressY = e.clientY
-        this.pressTimeout = setTimeout(() => this.onPress(e), 100)
+        this.pressTimeout = setTimeout(() => this.onPress(e), 200)
         
         addEventListener('pointermove', this.cancelPress)
         addEventListener('pointerup', this.cancelPress)
@@ -206,6 +206,16 @@ export class Task {
         this.board.onTaskDragStop()
     }
 
+    onClick() {
+        removeEventListener('pointermove', this.cancelPress)
+        removeEventListener('pointerup', this.cancelPress)
+        removeEventListener('pointercancel', this.cancelPress)
+        
+        clearTimeout(this.pressTimeout)
+        
+        this.taskDialog.show(this)
+    }
+
     render({ followPointer } = {}) {
         const { data } = this
         const nSubtasks = data.subtasksIds.length
@@ -229,7 +239,7 @@ export class Task {
                 style="${style}"
                 data-dragging="${() => !followPointer && data.dragging}"
                 @pointerdown="${e => this.onPointerDown(e)}"
-                @click="${() => this.taskDialog.show(this)}"
+                @click="${() => this.onClick()}"
                 @touchmove="${e => data.dragging && e.preventDefault() }">
             
                 <h4 class="task__title | title title--m">

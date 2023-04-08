@@ -1,4 +1,4 @@
-const cacheName = 'kanban-v1'
+const cacheName = 'kanban'
 const files = [
 	'/',
 	'/index.html',
@@ -49,8 +49,16 @@ const buildCache = async () => {
 	await cache.addAll(filesToCache)
 }
 
-const getCache = async (request) => {
+const getResp = async (request) => {
 	const cache = await caches.open(cacheName)
+
+	const networkResp = await fetch(request)
+
+	if (networkResp) {
+		cache.put(request, networkResp.clone())
+
+		return networkResp
+	}
 
 	return await cache.match(request)
 }
@@ -60,5 +68,5 @@ self.addEventListener('install', e => {
 })
 
 self.addEventListener('fetch', e => {
-	e.respondWith(getCache(e.request))
+	e.respondWith(getResp(e.request))
 })
