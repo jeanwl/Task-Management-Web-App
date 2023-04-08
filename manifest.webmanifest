@@ -27,6 +27,7 @@
       ],
     "start_url": "https://jeanwll.github.io/Task-Management-Web-App/",
     "background_color": "#ffffff",
+    "theme_color": "#635FC7",
     "display": "standalone",
     "orientation": "portrait",
     "description": "Kanban web app simplifies task management",

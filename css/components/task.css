@@ -36,21 +36,22 @@
 .task__top-hitbox {
     position: absolute;
     inset: 0 0 50% 0;
-}
-/* .task[data-dragging] + .task .task__top-hitbox {
     pointer-events: none;
-} */
+}
+.app[data-dragging-task] .task__top-hitbox {
+    pointer-events: auto;
+}
 
 .task__title {
     overflow-wrap: break-word;
 
     transition: color .2s;
 }
-.task:hover .task__title {
-    color: var(--purple);
-}
 .app[data-is-dark] .task__title {
     color: white;
+}
+.app:not([data-dragging-task]) .task:hover .task__title {
+    color: var(--purple);
 }
 
 .task__completed {

@@ -183,6 +183,7 @@ export class Board {
 
     onTaskDragStart({ task }) {
         this.cancelDrag()
+        this.data.dragging = false
 
         const rect = this.el.getBoundingClientRect()
         this.bounds = {

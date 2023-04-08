@@ -141,7 +141,12 @@ export class Task {
         localStorage.removeItem(this.storageKey)
     }
 
-    cancelPress = () => {
+    cancelPress = (e) => {
+        const deltaX = Math.abs(e.clientX - this.pressX)
+        const deltaY = Math.abs(e.clientY - this.pressY)
+
+        if (deltaX < 5 && deltaY < 5) return
+
         removeEventListener('pointermove', this.cancelPress)
         removeEventListener('pointerup', this.cancelPress)
         removeEventListener('pointercancel', this.cancelPress)
@@ -150,6 +155,8 @@ export class Task {
     }
 
     onPointerDown(e) {
+        this.pressX = e.clientX
+        this.pressY = e.clientY
         this.pressTimeout = setTimeout(() => this.onPress(e), 100)
         
         addEventListener('pointermove', this.cancelPress)
@@ -161,7 +168,11 @@ export class Task {
         const { data } = this
         const { target } = e
         
-        this.cancelPress()
+        removeEventListener('pointermove', this.cancelPress)
+        removeEventListener('pointerup', this.cancelPress)
+        removeEventListener('pointercancel', this.cancelPress)
+        
+        clearTimeout(this.pressTimeout)
         
         data.dragging = true
 
