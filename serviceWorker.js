@@ -52,10 +52,10 @@ const buildCache = async () => {
 const getResp = async (request) => {
 	const cache = await caches.open(cacheName)
 
-	const networkResp = await fetch(request)
-
-	if (networkResp) {
-		cache.put(request, networkResp.clone())
+	if (navigator.onLine) {
+		const networkResp = await fetch(request)
+		
+		if (networkResp.ok) cache.put(request, networkResp.clone())
 
 		return networkResp
 	}
