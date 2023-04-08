@@ -36,6 +36,9 @@ export class Board {
         this.app = app
         this.id = id
         this.storageKey = this.elId = `board_${id}`
+        this.columnsId = `column_${id}`
+    
+        this.resizeObserver = new ResizeObserver(this.onResize)
 
         if (!isNew) this.load()
 
@@ -50,6 +53,10 @@ export class Board {
 
     get el() {
         return window[this.elId]
+    }
+
+    get columnsEl() {
+        return window[this.columnsId]
     }
 
     getName() {
@@ -165,7 +172,7 @@ export class Board {
     }
 
     onPointerDown(e) {
-        if (e.pointerType != 'mouse') return
+        if (!this.data.columnsOverflow || e.pointerType != 'mouse') return
 
         addEventListener('pointermove', this.startDrag)
         addEventListener('pointerup', this.cancelDrag)
@@ -265,6 +272,16 @@ export class Board {
         clearInterval(this.scrollInterval)
     }
 
+    onResize = () => {
+        const { el, columnsEl } = this
+
+        if (!columnsEl) return
+
+        const hasOverflow = el.clientWidth < columnsEl.clientWidth || el.clientHeight < columnsEl.clientHeight
+        
+        this.data.columnsOverflow = hasOverflow
+    }
+
     render() {
         const { data } = this
 
@@ -299,6 +316,7 @@ export class Board {
 
             <section class="board__content" id="${this.elId}"
                 data-dragging="${() => data.dragging}"
+                data-overflow="${() => data.columnsOverflow}"
                 @pointerdown="${e => this.onPointerDown(e)}"
                 @lostpointercapture="${() => this.onLostPointerCapture()}"
                 @pointermove="${e => this.onPointerMove(e)}">
@@ -335,9 +353,12 @@ export class Board {
 
         `
 
+        this.resizeObserver.disconnect()
+        setTimeout(() => this.resizeObserver.observe(this.columnsEl))
+
         return html`
         
-        <ul class="board__columns">
+        <ul class="board__columns" id="${this.columnsId}">
             ${() => columns.map(column => column.render())}
 
             <li class="column column--new">

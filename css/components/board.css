@@ -122,12 +122,14 @@
     overflow: auto;
     user-select: none;
     background-color: var(--lightest-blue);
-    cursor: grab;
 
     transition: background-color var(--theme-transition);
 }
 [data-is-dark] .board__content {
     background-color: var(--deep-blue);
+}
+.board__content[data-overflow] {
+    cursor: grab;
 }
 .board__content[data-dragging] {
     cursor: grabbing;

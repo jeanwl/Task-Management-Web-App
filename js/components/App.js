@@ -36,6 +36,8 @@ export class App {
 
     onResize() {
         this.data.isSmall = matchMedia('(max-width: 767.98px)').matches
+
+        this.boards[this.data.currentBoard]?.onResize()
     }
 
     load() {
