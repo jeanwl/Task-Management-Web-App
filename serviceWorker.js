@@ -56,16 +56,17 @@ self.addEventListener('install', e => {
 
 const getResp = async (request) => {
 	const cache = await caches.open(cacheName)
-
-	if (navigator.onLine) {
-		const networkResp = await fetch(request)
+	
+	try {
+		const resp = await fetch(request)
 		
-		if (networkResp.ok) cache.put(request, networkResp.clone())
-
-		return networkResp
+		if (resp.ok) cache.put(request, resp.clone())
+	
+		return resp
 	}
-
-	return await cache.match(request)
+	catch {
+		return await cache.match(request)
+	}
 }
 
 self.addEventListener('fetch', e => {
