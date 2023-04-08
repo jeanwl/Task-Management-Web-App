@@ -235,7 +235,7 @@ export class Task {
         return html`
         
         <li class="task-item" data-id="${this.id}" data-column-id="${this.column.id}">
-            <div class="task${followPointer ? ' task--follow-pointer' : ''}"
+            <button class="task${followPointer ? ' task--follow-pointer' : ''}"
                 style="${style}"
                 data-dragging="${() => !followPointer && data.dragging}"
                 @pointerdown="${e => this.onPointerDown(e)}"
@@ -247,7 +247,7 @@ export class Task {
                 </h4>
                 
                 ${completed}
-            </div>
+            </button>
 
             <div>
                 ${() => this.taskDialog.render()}

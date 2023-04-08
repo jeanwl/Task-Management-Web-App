@@ -283,6 +283,7 @@ export class Board {
         <section class="board">
             <header class="board__header">
                 <button class="board__title-btn"
+                    tabindex="${() => this.app.data.isSmall ? 0 : -1}"
                     @click="${e => this.app.toggleAltMenu(e)}">
                     
                     <h2 class="board__title | title title--xl">

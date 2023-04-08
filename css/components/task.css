@@ -1,5 +1,6 @@
 .task {
     position: relative;
+    width: 100%;
     padding: 23px 16px;
     background-color: white;
     border-radius: 8px;
