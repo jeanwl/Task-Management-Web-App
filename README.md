@@ -123,6 +123,7 @@ class Task {
 
         localStorage.setItem(this.storageKey, JSON.stringify(save))
     }
+}
 ```
 
 ![localStorage Screenshot](./readme-images/localstorage.png)
