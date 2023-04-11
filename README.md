@@ -111,7 +111,7 @@ class Task {
     constructor() {
         this.storageKey = `task_${id}`
         
-		for (const key of this.keysToSave) {
+        for (const key of this.keysToSave) {
             data.$on(key, () => this.save())
         }
     }
