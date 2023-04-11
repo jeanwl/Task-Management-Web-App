@@ -108,7 +108,7 @@ class Task {
         dragging: false
     })
 
-	constructor() {
+    constructor() {
         this.storageKey = `task_${id}`
         
 		for (const key of this.keysToSave) {
@@ -116,7 +116,7 @@ class Task {
         }
     }
 
-	save() {
+    save() {
         const { data } = this
         const entries = this.keysToSave.map(key => [key, data[key]])
         const save = Object.fromEntries(entries)
